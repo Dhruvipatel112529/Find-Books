@@ -1,0 +1,156 @@
+.payment-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.payment-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.payment-header {
+  background-color: #020202;
+  color: #fff;
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+}
+
+.payment-details strong {
+  font-size: 1.5rem;
+}
+
+.payment-method-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 3% 2%;
+}
+
+.payment-method-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Adjust spacing between radio and text */
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.payment-method-options input[type="radio"] {
+  margin: 0;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #333;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+}
+
+.payment-method-options input[type="radio"]:checked::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background-color: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+.payment-header img {
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+}
+
+.header-text {
+  margin: 5% 5%;
+}
+
+.header-text h1 {
+  font-size: 1.5rem;
+}
+
+.header-text p {
+  font-size: 1rem;
+}
+
+.order-summary p {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 16px;
+}
+
+.discount {
+  color: green;
+}
+
+.free {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.total-amount {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.savings {
+  color: green;
+  font-weight: bold;
+}
+
+.pay-button {
+  background-color: #040404;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .payment-card {
+    width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-card {
+    padding: 15px;
+  }
+
+  .order-summary p {
+    font-size: 18px;
+  }
+
+  .pay-button {
+    font-size: 14px;
+  }
+
+  .header-text h1 {
+    font-size: 1rem;
+  }
+
+  .header-text p {
+    font-size: 0.7rem;
+  }
+
+  .payment-header img {
+    height: 60px;
+    width: 60px;
+  }
+}
