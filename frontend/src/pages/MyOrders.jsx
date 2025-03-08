@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Navbar } from "../components/Navbar";
 import "../pages-css/MyOrders.css";
 import { ProfileMenu } from "../components/ProfileMenu";
-//import { useNavigate } from "react-router-dom";
 
 export const MyOrders = () => {
   const [order, setOrder] = useState([]);
   const [book, setBook] = useState([]);
-  //const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCarts = async () => {
@@ -33,7 +31,6 @@ export const MyOrders = () => {
   }, []);
 
   const updateOrderStatus = async (orderId, newStatus) => {
-    // Optimistically update the UI before sending the request
     setOrder((prevOrders) =>
       prevOrders.map((order) =>
         order._id === orderId ? { ...order, Order_Status: newStatus } : order
@@ -60,7 +57,6 @@ export const MyOrders = () => {
       console.error("Error updating order status:", error);
       alert("Failed to update order status. Please try again.");
 
-      // Revert the UI update if the request fails
       setOrder((prevOrders) =>
         prevOrders.map((order) =>
           order._id === orderId
@@ -74,6 +70,15 @@ export const MyOrders = () => {
     }
   };
 
+  // Function to format date as DD-MM-YYYY
+  const formatDate = (isoDate) => {
+    if (!isoDate) return "";
+    const dateObj = new Date(isoDate);
+    return `${dateObj.getDate().toString().padStart(2, "0")}-${(dateObj.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${dateObj.getFullYear()}`;
+  };
+
   return (
     <>
       <Navbar />
@@ -85,9 +90,8 @@ export const MyOrders = () => {
             {order.length > 0 ? (
               order.map((orderItem) => (
                 <div key={orderItem._id} className="myordercard">
-            
                   <p>
-                    <strong>Order Date:</strong> <span>{orderItem.Order_Date}</span>
+                    <strong>Order Date:</strong> <span>{formatDate(orderItem.Order_Date)}</span>
                   </p>
                   <p>
                     <strong>Total Amount:</strong> <span>₹{orderItem.Total_Amount}</span>
@@ -98,7 +102,6 @@ export const MyOrders = () => {
 
                   {/* Display Books in Each Order */}
                   <div className="book-list">
-                    {console.log(orderItem)}
                     {book
                       .filter(
                         (bookItem, index, self) =>
@@ -111,7 +114,7 @@ export const MyOrders = () => {
                       .map((bookItem) => {
                         const matchedBook = orderItem.books.find(
                           (orderBook) => orderBook.book_id === bookItem._id
-                        ); // Find the correct book quantity
+                        );
 
                         return (
                           <div key={bookItem._id} className="book-card">
@@ -135,13 +138,13 @@ export const MyOrders = () => {
                         );
                       })}
                   </div>
-                  {orderItem.Order_Status === "cancel" || orderItem.Order_Status === "Shipped" ? "" :
-                  <button
-                    onClick={() => updateOrderStatus(orderItem._id, "cancel")}
-                  >
-                    {" "}
-                    Cancel Order
-                  </button>}
+                  {orderItem.Order_Status === "cancel" || orderItem.Order_Status === "Shipped" ? (
+                    ""
+                  ) : (
+                    <button onClick={() => updateOrderStatus(orderItem._id, "cancel")}>
+                      Cancel Order
+                    </button>
+                  )}
                 </div>
               ))
             ) : (
