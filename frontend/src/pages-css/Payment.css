@@ -15,6 +15,9 @@
   padding: 20px;
 }
 
+.payment-head {
+}
+
 .payment-header {
   background-color: #020202;
   color: #fff;
@@ -24,7 +27,8 @@
 }
 
 .payment-details strong {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+  margin-left: 2%;
 }
 
 .payment-method-options {
@@ -38,7 +42,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  /* Adjust spacing between radio and text */
   font-size: 16px;
   cursor: pointer;
 }
@@ -66,6 +69,19 @@
   transform: translate(-50%, -50%);
 }
 
+/* Ensure radio button is fully round on screens > 780px */
+@media (min-width: 780px) {
+  .payment-method-options input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #333;
+  }
+
+  .payment-method-options input[type="radio"]:checked::before {
+    width: 12px;
+    height: 12px;
+  }
+}
 
 .payment-header img {
   height: 80px;
@@ -77,12 +93,17 @@
   margin: 5% 5%;
 }
 
-.header-text h1 {
+.payment-head {
+  margin-left: 5%;
+  margin-top: 5%;
+}
+
+.payment-head h1 {
   font-size: 1.5rem;
 }
 
-.header-text p {
-  font-size: 1rem;
+.payment-head p {
+  font-size: larger;
 }
 
 .order-summary p {
