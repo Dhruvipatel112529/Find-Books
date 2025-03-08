@@ -37,6 +37,30 @@
   margin-bottom: 20px;
 }
 
+.bookold { 
+   background: linear-gradient(45deg, #ff4d4d, #ff1a1a);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block;
+  margin-bottom: 5px;
+  
+}
+
+.booknew {
+  background: linear-gradient(45deg, #4CAF50, #2E7D32); 
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block;
+  margin-bottom: 5px;
+  margin-right: 1.7%;
+}
+
 .cart-item {
   display: flex;
   justify-content: space-between;
@@ -44,6 +68,7 @@
   padding: 15px;
   border-bottom: 1px solid #ecf0f1;
   transition: transform 0.2s ease-in-out;
+  gap: 20px;
 }
 
 .cart-item:hover {
@@ -145,6 +170,7 @@
   object-fit:fill;
   border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-left: 3%;
 }
 
 
@@ -166,6 +192,11 @@
 
   .cart-summary{
     text-align: center;
+  }
+
+  .img{
+    width: 15vh;
+    margin-right: 5%;
   }
 }
 
@@ -204,8 +235,7 @@
   }
 
   .img {
-    width: 70px;
-    height: 70px;
+    width: 15vh;
   }
 }
 
