@@ -67,7 +67,7 @@ export const AdminOrders = () => {
         </thead>
         <tbody>
           {orders
-            .filter((order) => order.Order_Status === "completed")
+            .filter((order) => order.Order_Status === "completed" || order.Order_Status === "cancelled" )
             .map((order) => (
               <tr key={order._id}>
                 <td>{order._id}</td>
