@@ -19,6 +19,15 @@ export const AdminViewOrder = () => {
 
   const { orderdata, userdata, bookdata } = orderDetails;
 
+  // Function to format date as DD-MM-YYYY
+  const formatDate = (isoDate) => {
+    if (!isoDate) return "";
+    const dateObj = new Date(isoDate);
+    return `${dateObj.getDate().toString().padStart(2, "0")}-${(dateObj.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${dateObj.getFullYear()}`;
+  };
+
   return (
     <div className="view-order-container">
       <h2 className="title">Order Details</h2>
@@ -39,7 +48,7 @@ export const AdminViewOrder = () => {
           <strong>Address:</strong> {orderdata.Address}
         </p>
         <p>
-          <strong>Date:</strong> {orderdata.Order_Date}
+          <strong>Date:</strong> {formatDate(orderdata.Order_Date)}
         </p>
         <p>
           <strong>Total Amount:</strong> {orderdata.Total_Amount}
