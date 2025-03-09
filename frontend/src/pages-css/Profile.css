@@ -15,16 +15,16 @@ body {
 
 .profile-page {
     background-color: white;
-    padding: 4% 7% 4% 7%;
-    width: 100%;
+    padding: 4% 4%;
+    width: 140%;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;  
-    height: 72vh; 
-    margin-top: 8.5%;
-    margin-right: 18%;
+    height: 65vh; 
+    margin-top: 10%;
+    margin-right: 15%;
 }
 
 .profile-header {
@@ -44,7 +44,6 @@ body {
     flex-wrap: wrap;
     display: flex;
     justify-content: center;
-    flex-direction: column; 
     align-items: center;
     gap: 20px;
     margin-top: 3%;
@@ -53,32 +52,14 @@ body {
     margin-left: 5%;
 }
 
-/* .profile-image {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid #ccc;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #eaeaea;
-    margin-right: 5%;
-}
 
-.profile-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-} */
-
-/* Profile Image Upload */
-.profile-image {
+/* Upload Button Styling */
+.profile-image-container {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
-    overflow: hidden;
+    overflow: visible;
     border: 3px solid #ccc;
     display: flex;
     justify-content: center;
@@ -86,19 +67,18 @@ body {
     background-color: #eaeaea;
 }
 
-.profile-image img {
+.profile-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
 }
 
-/* Upload Button */
 .upload-button {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background-color: rgba(0, 0, 0, 0.7);
+    bottom: -3px;
+    right: 0px;
+    background: linear-gradient(45deg,  #ff9800,#ff5722);
     color: white;
     border-radius: 50%;
     padding: 5px;
@@ -106,30 +86,31 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 25px;
-    height: 25px;
-    z-index: 100;
+    width: 35px;
+    height: 35px;
+    z-index: 10;
+    transition: background-color 0.3s ease-in-out;
+    border: 2px solid white;
 }
 
 .upload-button:hover {
-    background-color: rgba(0, 0, 0, 0.9);
+    background: linear-gradient(45deg, #ff5722, #ff9800);
 }
 
-/* Hide default file input */
 .file-input {
     display: none;
 }
-
 
 .profile-info {
     flex: 1;
     max-width: 100%;
     font-size: larger;
+    margin-left: 2%;
 }
 
 .profile-info p {
-    margin: 5px 0;
-    font-size: 1.1rem;
+    margin: 2% 0;
+    font-size: 1.2rem;
     color: #555;
     font-weight: 500;
     align-items: center;
@@ -190,13 +171,17 @@ body {
         margin-right: 10%;
         margin-top: 10%;
     }
+
+    .profile-info p{
+        font-size: 1rem;
+    }
 }
 
   
 @media (max-width: 900px) {
     .profile-page{
         margin-right: 7%;
-        margin-top: 10%;
+        margin-top: 12%;
     }
 }
 
@@ -223,8 +208,8 @@ body {
     }
 
     .profile-image img {
-        width: 100px;
-        height: 100px;
+        width: 100%;
+        height: 100%;
     }
 
 
@@ -258,8 +243,8 @@ body {
     }
 
     .profile-image img {
-        width: 100px;
-        height: 100px;
+        width: 100%;
+        height: 100%;
     }
     
     .profile-info p {
@@ -282,10 +267,10 @@ body {
         padding: 15px;
         align-items: center;
         justify-content: center;
-        max-height: 85%;
-        margin-top: 9%;
-        padding: 4% 7% 4% 7%;
-        margin-right: 18%;
+        height: 75vh;
+        margin-top: 7%;
+        padding: 4% 7% ;
+        margin-right: 15%;
     }
     
     .profile-header h1 {
@@ -299,7 +284,7 @@ body {
     }
     
     .profile-info p {
-        font-size:1.4rem;
+        font-size:1.25rem;
     }
 
     .profile-info{
