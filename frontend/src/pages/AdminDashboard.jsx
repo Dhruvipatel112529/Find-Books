@@ -6,7 +6,6 @@ import { Navigate, NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AdminContext";
 import Load from "../components/Load";
-import { IoSettingsSharp } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { MdReport } from "react-icons/md";
 import Cookies from "js-cookie";
@@ -21,7 +20,7 @@ const AdminRoute = ({ children }) => {
       <div>
         <Load />
       </div>
-    ); // You can replace this with a spinner or nothing at all
+    );
   }
 
   if (!user || user.isAdmin !== true) {
@@ -36,7 +35,7 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [bookdata, setBookdata] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [revenue , setRevenue] = useState(0);
+  const [revenue, setRevenue] = useState(0);
   const { setOrderDetails } = useViewOrder();
 
   const navigate = useNavigate();
@@ -54,20 +53,21 @@ const AdminDashboard = () => {
           credentials: "include",
         });
         const json = await response.json();
-        getUser(json.user); // Initialize with all user
+        getUser(json.user);
       } catch (error) {
         alert("An error occurred. Please try again later.");
         console.error(error);
       }
     };
-    GetUser();
 
+    GetUser();
     const getOrders = async () => {
       try {
         const response = await fetch("http://localhost:2606/api/Orders", {
           credentials: "include",
         });
         const json = await response.json();
+        console.log("Fetched Orders:", json.orders);
         setOrders(json.orders);
       } catch (error) {
         alert("An error occurred. Please try again later.");
@@ -83,12 +83,13 @@ const AdminDashboard = () => {
           credentials: "include",
         });
         const json = await response.json();
-        setUsers(json.users); // Initialize with all users
+        setUsers(json.users);
       } catch (error) {
         alert("An error occurred. Please try again later.");
         console.error(error);
       }
     };
+
     GetUsers();
 
     const fetchBook = async () => {
@@ -100,46 +101,43 @@ const AdminDashboard = () => {
         console.error(error);
       }
     };
-    fetchBook();
 
+    fetchBook();
+  }, []);
+
+  useEffect(() => {
     const getRevenue = async () => {
       try {
         const res = await fetch("http://localhost:2606/api/verify", {
           credentials: "include",
         });
         const data = await res.json();
-    
-        // Ensure all transactions are processed correctly
+
         const totalRevenue = data.payment.reduce((acc, pdata) => {
-          const transactionType = pdata.transaction_Type?.toLowerCase(); // Normalize case
+          const transactionType = pdata.transaction_Type?.toLowerCase();
           const paymentStatus = pdata.payment_status?.toLowerCase();
           const amount = pdata.total_payment || 0;
-    
-          console.log(`Transaction: ${transactionType}, Status: ${paymentStatus}, Amount: ${amount}`);
-    
+
           if (paymentStatus === "completed") {
             if (transactionType === "credit") {
-              return acc + amount; // Add for successful credit transactions
+              return acc + amount;
             } else if (transactionType === "debit") {
-              return acc - amount; // Subtract for refunds/cancellations
+              return acc - amount;
             }
           }
           return acc;
         }, 0);
-    
-        console.log("Calculated Revenue:", totalRevenue); // Debugging log
-        setRevenue(totalRevenue); // Update state with correct revenue
+
+        setRevenue(totalRevenue);
       } catch (error) {
         console.error("Error fetching revenue data:", error);
       }
     };
 
     getRevenue();
-    
   }, []);
 
   const updateOrderStatus = async (orderId, newStatus) => {
-    // Optimistically update the UI before sending the request
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
         order._id === orderId ? { ...order, Order_Status: newStatus } : order
@@ -166,7 +164,6 @@ const AdminDashboard = () => {
       console.error("Error updating order status:", error);
       alert("Failed to update order status. Please try again.");
 
-      // Revert the UI update if the request fails
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order._id === orderId
@@ -181,25 +178,20 @@ const AdminDashboard = () => {
   };
 
   const viewOrder = (orderdata, bookdata) => {
-    // Find the user who placed the order
     const userdata = users.find((data) => data._id === orderdata.User_id);
 
-    // Map book data with corresponding quantity from orderdata.books
-    const filteredBooks = orderdata.books.map((bdata) => {
-      const bookInfo = bookdata.find((data) => data._id === bdata.book_id);
-      return bookInfo ? { ...bookInfo, book_quantity: bdata.book_quantity } : null;
-    }).filter(book => book !== null); // Remove any null values if no book is found
+    const filteredBooks = orderdata.books
+      .map((bdata) => {
+        const bookInfo = bookdata.find((data) => data._id === bdata.book_id);
+        return bookInfo
+          ? { ...bookInfo, book_quantity: bdata.book_quantity }
+          : null;
+      })
+      .filter((book) => book !== null);
 
-    console.log("Filtered Books with Quantity:", filteredBooks);
-
-    // Update the state with order details
     setOrderDetails({ orderdata, userdata, bookdata: filteredBooks });
-
-    // Navigate to the order view page
     navigate("/Admin/ViewOrder");
   };
-
-
 
   return (
     <div className="admin-dashboard-container">
@@ -221,9 +213,9 @@ const AdminDashboard = () => {
               </NavLink>
             </li>
             <li>
-              <a href="#orders">
+              <NavLink to="/Admin/Orders">
                 <FaTruckMoving /> Orders
-              </a>
+              </NavLink>
             </li>
             <li>
               <NavLink to="/Admin/ManageBooks">
@@ -236,14 +228,9 @@ const AdminDashboard = () => {
               </NavLink>
             </li>
             <li>
-              <a href="#reports">
+              <NavLink to="/Admin/Reports">
                 <MdReport /> Reports
-              </a>
-            </li>
-            <li>
-              <a href="#settings">
-                <IoSettingsSharp /> Settings
-              </a>
+              </NavLink>
             </li>
           </ul>
         </nav>
@@ -295,35 +282,55 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
-                <tr key={order._id}>
-                  <td>{order._id}</td>
-                  <td>{order.User_id}</td>
-                  <td>{order.Order_Status}</td>
-                  <td>{order.Total_Amount}</td>
-                  <td>
-                    <button className="action-btn" onClick={() => viewOrder(order, bookdata)}>View</button>
-                  </td>
-                  <td>
-                    {order.Order_Status === "Shipped" ? (
-                      <button
-                        className="action-btn"
-                        onClick={() => updateOrderStatus(order._id, "pending")}
-                      >
-                        pending
-                      </button>
-                    ) : (
-                      <button
-                        className="action-btn"
-                        onClick={() => updateOrderStatus(order._id, "Shipped")}
-                      >
-                        Shipped
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  {orders
+    .filter((order) => {
+      return (
+        order.Order_Status.toLowerCase() === "shipped" ||
+        order.Order_Status.toLowerCase() === "pending"
+      );
+    })
+    .map((order) => {
+      const userDetail = users.find((user) => user._id === order.User_id);
+      const userName = userDetail
+        ? `${userDetail.First_name} ${userDetail.Last_name}`
+        : "Unknown User";
+
+      return (
+        <tr key={order._id}>
+          <td>{order._id}</td>
+          <td>{userName}</td> {/* Display User's Full Name */}
+          <td>{order.Order_Status}</td>
+          <td>{order.Total_Amount}</td>
+          <td>
+            <button
+              className="action-btn"
+              onClick={() => viewOrder(order, bookdata)}
+            >
+              View
+            </button>
+          </td>
+          <td>
+            {order.Order_Status.toLowerCase() === "shipped" ? (
+              <button
+                className="action-btn"
+                onClick={() => updateOrderStatus(order._id, "pending")}
+              >
+                Pending
+              </button>
+            ) : (
+              <button
+                className="action-btn"
+                onClick={() => updateOrderStatus(order._id, "shipped")}
+              >
+                Shipped
+              </button>
+            )}
+          </td>
+        </tr>
+      );
+    })}
+</tbody>
+
           </table>
         </section>
       </main>
