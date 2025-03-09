@@ -1,242 +1,341 @@
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import "../components-css/BookForm.css";
+import React, { useEffect, useState } from "react";
+import "../pages-css/AdminDashboard.css";
+import { FaBook, FaBookOpen, FaHome } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
+import { Navigate, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AdminContext";
+import Load from "../components/Load";
+import { MdAdminPanelSettings } from "react-icons/md";
+import { MdReport } from "react-icons/md";
+import Cookies from "js-cookie";
+import { FaTruckMoving } from "react-icons/fa";
+import { useViewOrder } from "../Context/OrderDetail";
 
-export const AdminEditBook = () => {
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div>
+        <Load />
+      </div>
+    );
+  }
+
+  if (!user || user.isAdmin !== true) {
+    return <Navigate to="/" />;
+  }
+
+  return children;
+};
+
+const AdminDashboard = () => {
+  const [user, getUser] = useState({});
+  const [users, setUsers] = useState([]);
+  const [bookdata, setBookdata] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [revenue, setRevenue] = useState(0);
+  const { setOrderDetails } = useViewOrder();
+
   const navigate = useNavigate();
-  const location = useLocation();
-  const { product } = location.state || {};
 
-  const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
-  const [formData, setFormData] = useState({
-    BookName: "",
-    image: null,
-    Author: "",
-    Edition: "",
-    Publication_Date: "",
-    Publisher: "",
-    Description: "",
-    Price: "",
-    ISBN: "",
-    isold: "",
-    Category: "",
-    SubCategory: "",
-  });
-
-  const editbook = async () => {
-    try {
-      if (!product._id) {
-        alert("Book ID is required for updating the book.");
-        return;
-      }
-  
-      let body;
-      let headers = {};
-  
-      if (formData.image && typeof formData.image === "object") {
-        // If an image is selected, use FormData
-        body = new FormData();
-        Object.entries({ ...formData, bookId: product._id }).forEach(([key, value]) =>
-          body.append(key, value)
-        );
-      } else {
-        // Otherwise, send JSON
-        body = JSON.stringify({ ...formData, bookId: product._id });
-        headers["Content-Type"] = "application/json";
-      }
-  
-      const response = await fetch("http://localhost:2606/api/Book", {
-        method: "PUT",
-        headers,
-        body,
-        credentials: "include",
-      });
-  
-      const result = await response.json();
-  
-      if (response.ok) {
-        alert("Book updated successfully");
-        navigate("/Admin/ManageBooks");
-      } else {
-        alert(result.error || "Failed to update the book.");
-      }
-    } catch (error) {
-      console.error("Error updating book:", error);
-      alert("An error occurred while updating the book.");
-    }
+  const handleLogout = () => {
+    Cookies.remove("token");
+    getUser(null);
+    navigate("/");
   };
-  
-
 
   useEffect(() => {
-    if (product) {
-      setFormData({
-        BookName: product.BookName || "",
-        image: product.image || null,
-        Author: product.Author || "",
-        Edition: product.Edition || "",
-        Publication_Date: product.Publication_Date || "",
-        Publisher: product.Publisher || "",
-        Description: product.Description || "",
-        Price: product.Price || "",
-        ISBN: product.ISBN || "",
-        isold: product.isold || "",
-        Category: product.Category || "",
-        SubCategory: product.SubCategory || "",
-      });
-    }
-  }, [product]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
+    const GetUser = async () => {
       try {
-        const response = await fetch("http://localhost:2606/api/Category");
-        const data = await response.json();
-        setCategories(data);
+        const response = await fetch("http://localhost:2606/api/User", {
+          credentials: "include",
+        });
+        const json = await response.json();
+        getUser(json.user);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        alert("An error occurred. Please try again later.");
+        console.error(error);
       }
     };
-    fetchCategories();
+
+    GetUser();
+    const getOrders = async () => {
+      try {
+        const response = await fetch("http://localhost:2606/api/Orders", {
+          credentials: "include",
+        });
+        const json = await response.json();
+        console.log("Fetched Orders:", json.orders);
+        setOrders(json.orders);
+      } catch (error) {
+        alert("An error occurred. Please try again later.");
+        console.error(error);
+      }
+    };
+
+    getOrders();
+
+    const GetUsers = async () => {
+      try {
+        const response = await fetch("http://localhost:2606/api/AllUser", {
+          credentials: "include",
+        });
+        const json = await response.json();
+        setUsers(json.users);
+      } catch (error) {
+        alert("An error occurred. Please try again later.");
+        console.error(error);
+      }
+    };
+
+    GetUsers();
+
+    const fetchBook = async () => {
+      try {
+        const res = await fetch("http://localhost:2606/api/Book");
+        const data = await res.json();
+        setBookdata(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchBook();
   }, []);
 
   useEffect(() => {
-    if (formData.Category) {
-      const fetchSubcategories = async () => {
-        try {
-          const response = await fetch(
-            `http://localhost:2606/api/${formData.Category}/Subcategory`
-          );
-          const data = await response.json();
-          setSubcategories(Array.isArray(data) ? data : []);
-        } catch (error) {
-          console.error("Error fetching subcategories:", error);
-          setSubcategories([]);
+    const getRevenue = async () => {
+      try {
+        const res = await fetch("http://localhost:2606/api/verify", {
+          credentials: "include",
+        });
+        const data = await res.json();
+
+        const totalRevenue = data.payment.reduce((acc, pdata) => {
+          const transactionType = pdata.transaction_Type?.toLowerCase();
+          const paymentStatus = pdata.payment_status?.toLowerCase();
+          const amount = pdata.total_payment || 0;
+
+          if (paymentStatus === "completed") {
+            if (transactionType === "credit") {
+              return acc + amount;
+            } else if (transactionType === "debit") {
+              return acc - amount;
+            }
+          }
+          return acc;
+        }, 0);
+
+        setRevenue(totalRevenue);
+      } catch (error) {
+        console.error("Error fetching revenue data:", error);
+      }
+    };
+
+    getRevenue();
+  }, []);
+
+  const updateOrderStatus = async (orderId, newStatus) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order._id === orderId ? { ...order, Order_Status: newStatus } : order
+      )
+    );
+
+    try {
+      const response = await fetch(
+        `http://localhost:2606/api/${orderId}/Order`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ status: newStatus }),
         }
-      };
-      fetchSubcategories();
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update order status");
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      alert("Failed to update order status. Please try again.");
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId
+            ? {
+                ...order,
+                Order_Status: newStatus === "Shipped" ? "pending" : "Shipped",
+              }
+            : order
+        )
+      );
     }
-  }, [formData.Category]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await editbook(); // Call the update function
   };
 
-  const handleCategoryChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      Category: e.target.value,
-      SubCategory: "",
-    }));
-  };
+  const viewOrder = (orderdata, bookdata) => {
+    const userdata = users.find((data) => data._id === orderdata.User_id);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    const filteredBooks = orderdata.books
+      .map((bdata) => {
+        const bookInfo = bookdata.find((data) => data._id === bdata.book_id);
+        return bookInfo
+          ? { ...bookInfo, book_quantity: bdata.book_quantity }
+          : null;
+      })
+      .filter((book) => book !== null);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setFormData((prev) => ({ ...prev, image: file }));
+    setOrderDetails({ orderdata, userdata, bookdata: filteredBooks });
+    navigate("/Admin/ViewOrder");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="resellerbookform">
-      <label>Book Name</label>
-      <input
-        type="text"
-        name="BookName"
-        value={formData.BookName}
-        onChange={handleChange}
-      />
+    <div className="admin-dashboard-container">
+      <aside className="sidebar">
+        <h2>
+          <MdAdminPanelSettings />
+          Admin Panel
+        </h2>
+        <nav>
+          <ul>
+            <li>
+              <NavLink to="/">
+                <FaHome /> Home
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/Admin/ManageUsers">
+                <FaUsers /> Users
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/Admin/Orders">
+                <FaTruckMoving /> Orders
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/Admin/ManageBooks">
+                <FaBookOpen /> Books
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/Admin/AddCat">
+                <FaBook /> Category
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/Admin/Reports">
+                <MdReport /> Reports
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <main className="main-content">
+        <div className="header-div">
+          <header className="dashboard-header">
+            <h1>Welcome, {user.First_name}</h1>
+            <button className="logout-btn" onClick={handleLogout}>
+              Log Out
+            </button>
+          </header>
+        </div>
+        <section className="statistics">
+          <div
+            className="stat-card"
+            onClick={() => navigate("/Admin/ManageUsers")}
+          >
+            <h3>Users</h3>
+            <p>{users.length}</p>
+          </div>
+          <div className="stat-card">
+            <h3>Orders</h3>
+            <p>{orders.length}</p>
+          </div>
+          <div className="stat-card">
+            <h3>Revenue</h3>
+            <p>₹{revenue}</p>
+          </div>
+          <div
+            className="stat-card"
+            onClick={() => navigate("/Admin/ManageBooks")}
+          >
+            <h3>Books</h3>
+            <p>{bookdata.length}</p>
+          </div>
+        </section>
+        <section className="data-table">
+          <h2>Recent Orders</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Amount</th>
+                <th>Action</th>
+                <th>Shipped</th>
+              </tr>
+            </thead>
+            <tbody>
+  {orders
+    .filter((order) => {
+      return (
+        order.Order_Status.toLowerCase() === "shipped" ||
+        order.Order_Status.toLowerCase() === "pending"
+      );
+    })
+    .map((order) => {
+      const userDetail = users.find((user) => user._id === order.User_id);
+      const userName = userDetail
+        ? `${userDetail.First_name} ${userDetail.Last_name}`
+        : "Unknown User";
 
-      <label>Book Image</label>
-      <input
-        type="file"
-        name="image"
-        onChange={handleImageChange}
-        accept="image/*"
-      />
-      {product?.image && !formData.image && (
-        <img
-          src={`http://localhost:2606/${product.image}`}
-          alt="Current Preview"
-          style={{ maxWidth: "200px", maxHeight: "200px" }}
-        />
-      )}
-      {formData.image && typeof formData.image === "object" && (
-        <img
-          src={URL.createObjectURL(formData.image)}
-          alt="New Preview"
-          style={{ maxWidth: "200px", maxHeight: "200px" }}
-        />
-      )}
+      return (
+        <tr key={order._id}>
+          <td>{order._id}</td>
+          <td>{userName}</td> {/* Display User's Full Name */}
+          <td>{order.Order_Status}</td>
+          <td>{order.Total_Amount}</td>
+          <td>
+            <button
+              className="action-btn"
+              onClick={() => viewOrder(order, bookdata)}
+            >
+              View
+            </button>
+          </td>
+          <td>
+            {order.Order_Status.toLowerCase() === "shipped" ? (
+              <button
+                className="action-btn"
+                onClick={() => updateOrderStatus(order._id, "pending")}
+              >
+                Pending
+              </button>
+            ) : (
+              <button
+                className="action-btn"
+                onClick={() => updateOrderStatus(order._id, "shipped")}
+              >
+                Shipped
+              </button>
+            )}
+          </td>
+        </tr>
+      );
+    })}
+</tbody>
 
-      <label>Author</label>
-      <input
-        type="text"
-        name="Author"
-        value={formData.Author}
-        onChange={handleChange}
-      />
-
-      <label>Publication Date</label>
-      <input
-        type="date"
-        name="Publication_Date"
-        value={formData.Publication_Date}
-        onChange={handleChange}
-      />
-
-      <label>Price</label>
-      <input
-        type="number"
-        name="Price"
-        value={formData.Price}
-        onChange={handleChange}
-      />
-
-      <label>ISBN No</label>
-      <input
-        type="text"
-        name="ISBN"
-        value={formData.ISBN}
-        onChange={handleChange}
-      />
-
-      <label>Category</label>
-      <select
-        name="Category"
-        value={formData.Category}
-        onChange={handleCategoryChange}
-      >
-        <option value="">Select Category</option>
-        {categories.map((category) => (
-          <option key={category._id} value={category._id}>
-            {category.Category_Name}
-          </option>
-        ))}
-      </select>
-
-      <label>Subcategory</label>
-      <select
-        name="SubCategory"
-        value={formData.SubCategory}
-        onChange={handleChange}
-      >
-        <option value="">Select Subcategory</option>
-        {subcategories.map((subcategory) => (
-          <option key={subcategory._id} value={subcategory._id}>
-            {subcategory.Subcategory_Name}
-          </option>
-        ))}
-      </select>
-
-      <button type="submit" className="resellerbook-btn">
-        Update Book
-      </button>
-    </form>
+          </table>
+        </section>
+      </main>
+    </div>
   );
 };
+
+export { AdminDashboard, AdminRoute };
