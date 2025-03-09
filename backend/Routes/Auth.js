@@ -237,49 +237,69 @@ router.delete(
 );
 
 
-router.put("/User",[ 
-    body("userId").notEmpty(),
-    body("username"),
-    body("email"),
-    body("mobile"),
-    body("password"),
-    body("role")
-  ],Authmid , async(req,res) => {
+router.put(
+  "/User",
+  [
+    body("userId").notEmpty().withMessage("User ID is required"),
+    body("firstname").optional(),
+    body("lastname").optional(),
+    body("email").optional(),
+    body("mobile").optional(),
+    body("password").optional(),
+    body("role").optional(),
+  ],
+  Authmid,
+  async (req, res) => {
+    // Validate request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { userId, firstName, lastName, email, mobile, password, role } = req.body;
+    const { userId, firstname, lastname, email, mobile, password, role } = req.body;
 
-  try{
-    const user = await User.findOne({_id : userId});
-    if(!user){
-      return res.status(404).json({ error: "No user found" });
+    try {
+      // Find user by ID
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "No user found" });
+      }
+
+      // Prepare update object
+      let updatedData = {};
+      if (firstname) updatedData.First_name = firstname;
+      if (lastname) updatedData.Last_name = lastname;
+      if (email) updatedData.Email = email;
+      if (mobile) updatedData.Phone_no = mobile;
+      if (password) {
+        console.log("Hashing password for user:", userId);
+        updatedData.Password = await bcrypt.hash(password, 10);
+      }
+      if (role) {
+        updatedData.isAdmin = role === "Admin";
+      }
+
+      // Debugging log
+      console.log("Updating user with data:", updatedData);
+
+      // Update user
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { $set: updatedData },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(500).json({ error: "Failed to update user" });
+      }
+
+      res.json({ success: true, message: "User updated successfully", user: updatedUser });
+    } catch (error) {
+      console.error("Error updating user:", error.message, error.stack);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-
-    let updatedData = {};
-    if (firstName) updatedData.First_name = firstName;
-    if (lastName) updatedData.Last_name = lastName;
-    if (email) updatedData.Email = email;
-    if (mobile) updatedData.Phone_no = mobile;
-    if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      updatedData.Password = hashedPassword;
-    }
-    if (role) updatedData.isAdmin = role;
-
-    // Update the user
-    user = await User.findByIdAndUpdate(userId, { $set: updatedData }, { new: true });
-
-    res.json({ success: true, message: "User updated successfully", user });
-
-  }catch(error){
-    console.error("Error updating user data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
-})
-
+);
 
 
 module.exports = router;
