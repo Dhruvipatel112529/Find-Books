@@ -24,6 +24,8 @@ import { BooksPage } from './pages/BooksPage';
 import { AdminAddUser } from './pages/AdminAddUser';
 import { AdminViewOrder } from './pages/AdminViewOrder';
 import { AddCat } from './pages/AddCat';
+import { EditProfile } from './pages/EditProfile';
+import Reports from './pages/Reports';
 
 export const App = () => {
   const router = createBrowserRouter([
@@ -36,6 +38,7 @@ export const App = () => {
         { path: "/Resellerpaymentform", element: <ResellerPaymentForm /> },
         { path: "/login", element: <Login/> },
         { path: "/Orders" ,  element: <MyOrders/>},
+        { path: "/EditProfile" ,  element: <EditProfile/>},
         { path: "/SellOrders", element:<SellOrders/>},
         { path: "/Admin", element: <AdminRoute><AdminDashboard/></AdminRoute>},
         { path: "/Useraddress", element: <Useraddress /> },
@@ -49,7 +52,8 @@ export const App = () => {
         {path : "/books/:category/:subcategory", element:<BooksPage/>},
         {path : "/Admin/ManageUsers/adduser" ,  element: <AdminRoute><AdminAddUser/></AdminRoute>},
         {path : "/Admin/ViewOrder" , element : <AdminRoute><AdminViewOrder/></AdminRoute> },
-        { path : "/Admin/AddCat" , element:  <AdminRoute><AddCat/></AdminRoute> }
+        { path : "/Admin/AddCat" , element:  <AdminRoute><AddCat/></AdminRoute> },
+        { path : "/Admin/Reports" , element:  <AdminRoute><Reports/></AdminRoute> }
   ]);
 
   return (

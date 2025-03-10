@@ -1,177 +1,280 @@
+/* General Styles */
 .payment-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
   padding: 20px;
-}
-
-.payment-card {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 90%;
-  max-width: 400px;
-  padding: 20px;
-}
-
-.payment-head {
+  padding-top: 80px;
 }
 
 .payment-header {
-  background-color: #020202;
-  color: #fff;
-  padding: 15px;
-  border-radius: 10px 10px 0 0;
-  display: flex;
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  text-align: center;
+  position: relative;
 }
 
-.payment-details strong {
-  font-size: 1.25rem;
-  margin-left: 2%;
-}
-
-.payment-method-options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 3% 2%;
-}
-
-.payment-method-options label {
+.back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 1rem;
   cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
-.payment-method-options input[type="radio"] {
-  margin: 0;
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  border: 2px solid #333;
-  border-radius: 50%;
+.back-button:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.payment-header h1 {
+  font-size: 2rem;
+  color: #1e293b;
+  margin-bottom: 24px;
+}
+
+.checkout-steps {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 24px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
   position: relative;
-  cursor: pointer;
 }
 
-.payment-method-options input[type="radio"]:checked::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  background-color: #333;
-  border-radius: 50%;
+.step.active {
+  color: #3b82f6;
+}
+
+.step span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.step:not(:last-child)::after {
+  content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 12px;
+  right: -20px;
+  width: 40px;
+  height: 2px;
+  background-color: #e2e8f0;
 }
 
-/* Ensure radio button is fully round on screens > 780px */
-@media (min-width: 780px) {
-  .payment-method-options input[type="radio"] {
-    width: 20px;
-    height: 20px;
-    border: 3px solid #333;
-  }
-
-  .payment-method-options input[type="radio"]:checked::before {
-    width: 12px;
-    height: 12px;
-  }
+.step.active::after {
+  background-color: #3b82f6;
 }
 
-.payment-header img {
-  height: 80px;
-  width: 80px;
-  border-radius: 50%;
+.payment-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.header-text {
-  margin: 5% 5%;
+.order-summary-section,
+.payment-section {
+  padding: 24px;
 }
 
-.payment-head {
-  margin-left: 5%;
-  margin-top: 5%;
-}
-
-.payment-head h1 {
+.order-summary-section h2,
+.payment-section h2 {
   font-size: 1.5rem;
+  color: #1e293b;
+  margin-bottom: 24px;
 }
 
-.payment-head p {
-  font-size: larger;
+.price-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.order-summary p {
+.price-item {
   display: flex;
   justify-content: space-between;
-  padding: 5px 0;
-  font-size: 16px;
+  align-items: center;
+  color: #64748b;
+  font-size: 1rem;
 }
 
-.discount {
-  color: green;
+.price-item.total {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1.25rem;
 }
 
-.free {
-  text-decoration: line-through;
-  color: gray;
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.total-amount {
-  font-weight: bold;
-  font-size: 18px;
+.payment-method-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.savings {
-  color: green;
-  font-weight: bold;
+.payment-method-card.selected {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.payment-method-card input[type="radio"] {
+  display: none;
+}
+
+.payment-method-card label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+}
+
+.payment-method-card label div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-method-card label span {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.payment-method-card label small {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.security-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 24px 0;
 }
 
 .pay-button {
-  background-color: #040404;
-  color: #fff;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
   width: 100%;
-  font-size: 16px;
+  padding: 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pay-button:hover {
+  background-color: #2563eb;
+}
+
+.pay-button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .payment-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .checkout-steps {
+    gap: 24px;
+  }
 }
 
 @media (max-width: 768px) {
-  .payment-card {
-    width: 95%;
+  .payment-container {
+    padding: 16px;
+    padding-top: 70px;
+  }
+
+  .payment-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .step span {
+    font-size: 0.75rem;
+  }
+
+  .payment-content {
+    padding: 16px;
+  }
+
+  .order-summary-section,
+  .payment-section {
+    padding: 16px;
+  }
+
+  .price-item {
+    font-size: 0.875rem;
+  }
+
+  .price-item.total {
+    font-size: 1.125rem;
   }
 }
 
 @media (max-width: 480px) {
-  .payment-card {
-    padding: 15px;
+  .payment-header h1 {
+    font-size: 1.5rem;
   }
 
-  .order-summary p {
-    font-size: 18px;
+  .checkout-steps {
+    gap: 16px;
   }
 
-  .pay-button {
-    font-size: 14px;
+  .step:not(:last-child)::after {
+    width: 20px;
+    right: -10px;
   }
 
-  .header-text h1 {
-    font-size: 1rem;
+  .payment-method-card {
+    padding: 12px;
   }
 
-  .header-text p {
-    font-size: 0.7rem;
+  .payment-method-card label {
+    gap: 12px;
   }
 
-  .payment-header img {
-    height: 60px;
-    width: 60px;
+  .payment-method-card label span {
+    font-size: 0.875rem;
+  }
+
+  .payment-method-card label small {
+    font-size: 0.75rem;
   }
 }
