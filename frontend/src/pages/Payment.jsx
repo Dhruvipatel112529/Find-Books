@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../pages-css/Payment.css";
 import { useLocation, useNavigate } from "react-router-dom";
+import { CreditCard, Package, Truck, Shield, ArrowLeft } from "lucide-react";
+import { Navbar } from "../components/Navbar";
 
 const deliveryChargesArray = [
   { pincode: "380001", charge: 30 }, { pincode: "380002", charge: 40 },
@@ -41,13 +43,12 @@ const deliveryChargesArray = [
   { pincode: "382450", charge: 320 }, { pincode: "382455", charge: 325 }
 ];
 
-
-
 export const Payment = () => {
   const [OrderData, setOrderData] = useState();
   const [paymentMethod, setPaymentMethod] = useState("Online");
   const [pcharge, setPcharge] = useState(0);
   const [deliveryCharge, setDeliveryCharge] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const location = useLocation();
   const Navigate = useNavigate();
@@ -164,9 +165,6 @@ export const Payment = () => {
     }
   }
 
-
-
-
   useEffect(() => {
     const fetchCarts = async () => {
       try {
@@ -181,10 +179,7 @@ export const Payment = () => {
     };
 
     fetchCarts();
-
-
   }, []);
-
 
   useEffect(() => {
     if (!cartDatas?.bookdetail || cartDatas.bookdetail.length === 0) {
@@ -192,14 +187,9 @@ export const Payment = () => {
       return;
     }
 
-    console.log("Checking books:", cartDatas.bookdetail); // Debugging
     const hasOldBook = cartDatas.bookdetail.some((book) => book?.Isoldbook === true);
-    console.log("Old book exists:", hasOldBook); // Debugging
-
     setPcharge(hasOldBook ? 3 : 0);
   }, [cartDatas]);
-
-
 
   useEffect(() => {
     if (!OrderData || !OrderData.Address) return;
@@ -209,7 +199,23 @@ export const Payment = () => {
     setDeliveryCharge(chargeData ? chargeData.charge : 0);
   }, [OrderData]);
 
+  const handlePayment = async () => {
+    setLoading(true);
+    try {
+      await payment();
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleCOD = async () => {
+    setLoading(true);
+    try {
+      await clear();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const clear = async () => {
     try {
@@ -256,69 +262,112 @@ export const Payment = () => {
     }
   };
 
-
   return (
-    <div className="payment-container">
-      <div className="payment-card">
-        <header className="payment-header">
-          <img src="src/images/findbook.png" className="profile-img2" alt="FindBooks Logo" />
-          <div>
-            <h1>FINDBOOKS</h1>
-            <p>Order </p>
-          </div>
-        </header>
-
-        <div className="order-summary">
-          <h3>PRICE DETAILS</h3>
-          <p><span>Price </span> <span>₹{total}</span></p>
-          <p><span>Discount</span> <span className="discount"> ₹0</span></p>
-          <p><span>Platform Fee</span>{pcharge}</p>
-
-          <p>
-            <span>Delivery Charges</span>
-            {deliveryCharge === 0 ? (
-              <span className="free">free</span>
-            ) : (
-              <span>₹{deliveryCharge}</span>
-            )}
-          </p>
-          <hr />
-          <p className="total-amount"><span>Total Amount</span> <span>₹{total + pcharge + deliveryCharge}</span></p>
-          {/* <p className="savings">You will save ₹ on this order</p> */}
-        </div>
-
-        <div className="payment-details">
-          <p><strong>Payment Method: </strong></p>
-          <div className="payment-method-options">
-            <label>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="Online"
-                checked={paymentMethod === "Online"}
-                onChange={() => setPaymentMethod("Online")}
-              />
-              Online Payment
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="COD"
-                checked={paymentMethod === "COD"}
-                onChange={() => setPaymentMethod("COD")}
-              />
-              Cash on Delivery (COD)
-            </label>
+    <>
+      <Navbar />
+      <div className="payment-container">
+        <div className="payment-header">
+          <button className="back-button" onClick={() => Navigate(-1)}>
+            <ArrowLeft size={20} />
+            Back to Cart
+          </button>
+          <h1>Checkout</h1>
+          <div className="checkout-steps">
+            <div className="step active">
+              <Package size={24} />
+              <span>Order Summary</span>
+            </div>
+            <div className="step active">
+              <CreditCard size={24} />
+              <span>Payment</span>
+            </div>
+            <div className="step">
+              <Truck size={24} />
+              <span>Delivery</span>
+            </div>
           </div>
         </div>
-        {
-          paymentMethod === "COD" ?
-            <button className="pay-button" onClick={clear}>Order </button>
-            :
-            <button className="pay-button" onClick={payment}>Pay ₹{total + pcharge + deliveryCharge}</button>
-        }
+
+        <div className="payment-content">
+          <div className="order-summary-section">
+            <h2>Order Summary</h2>
+            <div className="order-details">
+              <div className="price-breakdown">
+                <div className="price-item">
+                  <span>Subtotal</span>
+                  <span>₹{total}</span>
+                </div>
+                <div className="price-item">
+                  <span>Platform Fee</span>
+                  <span>₹{pcharge}</span>
+                </div>
+                <div className="price-item">
+                  <span>Delivery Charges</span>
+                  <span>{deliveryCharge === 0 ? "Free" : `₹${deliveryCharge}`}</span>
+                </div>
+                <div className="price-item total">
+                  <span>Total Amount</span>
+                  <span>₹{total + pcharge + deliveryCharge}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="payment-section">
+            <h2>Payment Method</h2>
+            <div className="payment-methods">
+              <div className={`payment-method-card ${paymentMethod === "Online" ? "selected" : ""}`}>
+                <input
+                  type="radio"
+                  id="online"
+                  name="paymentMethod"
+                  value="Online"
+                  checked={paymentMethod === "Online"}
+                  onChange={() => setPaymentMethod("Online")}
+                />
+                <label htmlFor="online">
+                  <CreditCard size={24} />
+                  <div>
+                    <span>Online Payment</span>
+                    <small>Pay securely with card, UPI, or net banking</small>
+                  </div>
+                </label>
+              </div>
+
+              <div className={`payment-method-card ${paymentMethod === "COD" ? "selected" : ""}`}>
+                <input
+                  type="radio"
+                  id="cod"
+                  name="paymentMethod"
+                  value="COD"
+                  checked={paymentMethod === "COD"}
+                  onChange={() => setPaymentMethod("COD")}
+                />
+                <label htmlFor="cod">
+                  <Package size={24} />
+                  <div>
+                    <span>Cash on Delivery</span>
+                    <small>Pay when you receive your order</small>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div className="security-info">
+              <Shield size={20} />
+              <span>Your payment information is secure and encrypted</span>
+            </div>
+
+            <button 
+              className="pay-button" 
+              onClick={paymentMethod === "COD" ? handleCOD : handlePayment}
+              disabled={loading}
+            >
+              {loading ? "Processing..." : paymentMethod === "COD" ? "Place Order" : `Pay ₹${total + pcharge + deliveryCharge}`}
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };

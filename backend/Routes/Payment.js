@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const authenticateToken = require("../middleware/AuthMid");
 const { body, validationResult } = require("express-validator");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Payment = require("../Schema/Payment");
 const Order = require("../Schema/Order");
 const Cart = require("../Schema/Cart");
+const authenticateToken = require("../middleware/AuthMid");
+
 
 
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
@@ -18,7 +19,9 @@ const instance = new Razorpay({
 });
 
 router.post("/orders", async (req, res) => {
+
     try {
+        console.log("RP"+ req.body.amount);
         const options = {
             amount: req.body.amount * 100,
             currency: "INR",

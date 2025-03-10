@@ -46,7 +46,7 @@
 
 .slideshow-container {
   width: 100%;
-  max-width: 100%; /* Adjust the width */
+  max-width: 100%;
   height: 500px;
   position: relative;
   overflow: hidden;
@@ -54,13 +54,111 @@
   justify-content: center;
   align-items: center;
   margin: auto;
+  background: #000;
+}
+
+.slideshow-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .slideshow-image {
+  position: absolute;
   width: 100%;
   height: 100%;
-  object-fit: fill;
-  transition: opacity 0.5s ease-in-out;
+  object-fit: cover;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.slideshow-image.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+  opacity: 0;
+}
+
+.slideshow-container:hover .slide-nav {
+  opacity: 0;
+}
+
+.slide-nav:hover {
+  background: rgba(0, 0, 0, 0.5);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.slide-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.slide-nav svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+  transition: transform 0.2s ease;
+}
+
+.slide-nav:hover svg {
+  transform: scale(1.1);
+}
+
+.slide-nav.prev {
+  left: 16px;
+}
+
+.slide-nav.next {
+  right: 16px;
+}
+
+.slide-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.indicator:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+}
+
+.indicator.active {
+  background: white;
+  transform: scale(1.2);
 }
 
 body {
@@ -230,6 +328,18 @@ body .book-card-container .book-card-contant .book-detail .book-btn:hover {
   list-style-type: none;
 }
 
+.no-books-message {
+  width: 100%;
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  grid-column: 1 / -1;
+  background: rgba(42, 43, 47, 0.5);
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
 @media (max-width: 480px) {
   .cards {
     gap: 0.1rem;
@@ -292,7 +402,39 @@ body .book-card-container .book-card-contant .book-detail .book-btn:hover {
   }
 
   .slideshow-container {
-    height: 350px;
+    height: 300px;
+  }
+
+  .slide-nav {
+    width: 32px;
+    height: 32px;
+  }
+
+  .slide-nav svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .slide-nav.prev {
+    left: 8px;
+  }
+
+  .slide-nav.next {
+    right: 8px;
+  }
+
+  .slide-indicators {
+    bottom: 10px;
+  }
+
+  .indicator {
+    width: 8px;
+    height: 8px;
+  }
+
+  .no-books-message {
+    font-size: 1rem;
+    padding: 1.5rem;
   }
 }
 
@@ -366,6 +508,34 @@ body .book-card-container .book-card-contant .book-detail .book-btn:hover {
 
   .slideshow-container {
     height: 400px;
+  }
+
+  .slide-nav {
+    width: 36px;
+    height: 36px;
+    opacity: 1;
+  }
+
+  .slide-nav svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .slide-nav.prev {
+    left: 12px;
+  }
+
+  .slide-nav.next {
+    right: 12px;
+  }
+
+  .slide-indicators {
+    bottom: 15px;
+  }
+
+  .indicator {
+    width: 10px;
+    height: 10px;
   }
 }
 
