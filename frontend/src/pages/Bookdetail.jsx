@@ -139,6 +139,7 @@ export const Bookdetail = () => {
                             <p><b><FaBookOpen /> Edition</b> {book.Edition || "Standard"}</p>
                             <p><b><FaCalendarAlt /> Published</b> {formatDate(book.Publication_Date)}</p>
                             <p><b><FaBuilding /> Publisher</b> {book.Publisher}</p>
+                            <p><b><FaBuilding /> ISBN Number</b> {book.Publisher}</p>
                         </div>
                         
                         <div className="book-description">

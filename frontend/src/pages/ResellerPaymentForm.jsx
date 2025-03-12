@@ -3,7 +3,7 @@ import "../pages-css/ResellerPaymentForm.css";
 import { useNavigate } from 'react-router-dom';
 
 export const ResellerPaymentForm = () => {
-    
+
     const [paymentMethod, setPaymentMethod] = useState('');
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -21,8 +21,41 @@ export const ResellerPaymentForm = () => {
         });
     };
 
+    const validateForm = () => {
+        if (!formData.address.trim()) {
+            alert("Address is required.");
+            return false;
+        }
+        if (!paymentMethod) {
+            alert("Please select a payment method.");
+            return false;
+        }
+        if (paymentMethod === "UPI" && !formData.upi_id.length < 10) {
+            alert("UPI ID is not valid.");
+            return false;
+        }
+        if (paymentMethod === "Banking Details") {
+            if (!formData.bank_acc_no.trim()) {
+                alert("Bank account number is required.");
+                return false;
+            }
+            if (!formData.ifsc_code.trim()) {
+                alert("IFSC code is required.");
+                return false;
+            }
+            const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+            if (!ifscRegex.test(formData.ifsc_code)) {
+                alert("Invalid IFSC code format.");
+                return false;
+            }
+        }
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) return;
+
         try {
             const response = await fetch("http://localhost:2606/api/ResellerPaymentForm", {
                 method: "POST",
@@ -57,7 +90,7 @@ export const ResellerPaymentForm = () => {
                 required
             />
 
-        <label>Payment Method</label>
+            <label>Payment Method</label>
             <select className="payment-method" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} required>
                 <option value="">Select Payment Method</option>
                 <option value="UPI">UPI</option>

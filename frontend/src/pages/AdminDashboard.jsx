@@ -206,13 +206,12 @@ const AdminDashboard = () => {
   const generateReport = async () => {
     try {
       setLoading(true);
-      const token = Cookies.get('token');
       const response = await fetch('http://localhost:2606/api/report/generate', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           startDate: dateRange.startDate,
           endDate: dateRange.endDate,
