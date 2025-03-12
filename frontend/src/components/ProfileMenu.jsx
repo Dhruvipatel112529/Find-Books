@@ -1,91 +1,93 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../components-css/ProfileMenu.css";
 import Load from "../components/Load";
 import { MdDashboard } from "react-icons/md";
 import { ImBooks } from "react-icons/im";
 import { MdOutlineSell } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
-import { FaBars, FaShoppingCart, FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
 
 export function ProfileMenu() {
-  const [admin, setAdmin] = useState(null);
-  const [deliveryperson, setDeliveryperson] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+    const [admin, setAdmin] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-  useEffect(() => {
-    const GetUser = async () => {
-      try {
-        const response = await fetch("http://localhost:2606/api/User", {
-          credentials: "include",
-        });
-        const json = await response.json();
-        setAdmin(json.user.Role[0].isAdmin);
-        setDeliveryperson(json.user.Role[0].isDeliveryPerson)
+    useEffect(() => {
+        const GetUser = async () => {
+            try {
+                const response = await fetch("http://localhost:2606/api/User", {
+                    credentials: "include",
+                });
+                const json = await response.json();
+                setAdmin(json.user.isAdmin);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        GetUser();
+    }, []);
 
-        if (loading) {
-          return <div><Load /></div>;
+    const handleAdminClick = (e) => {
+        if (admin) {
+            e.preventDefault();
+            navigate("/Admin");
         }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
     };
-    GetUser();
-  }, []);
 
-  const handleAdminClick = (e) => {
-    e.preventDefault(); // Prevent default <Link> behavior
-    navigate("/Admin");
-  };
+    const isActive = (path) => {
+        return location.pathname === path;
+    };
 
-  return (
-    <div className="profile-container">
-      <div className="side-menu">
-        <h3 className="menu-title">
-          <FaUserCircle /> My Account
-        </h3>
-        {deliveryperson ? (
-          <ul>
-            <li className="menu-item">
-              <Link to="/deliverydashboard">
-                <MdDashboard /> Dashboard
-              </Link>
-            </li>
-          </ul>
-        ) : (
-          !loading && (
+    if (loading) {
+        return <Load />;
+    }
+
+    return (
+        <div className="side-menu">
+            <h3 className="menu-title">
+                <FaUserCircle /> My Account
+            </h3>
             <ul>
-              {admin && (
+                {admin && (
+                    <li className="menu-item">
+                        <Link 
+                            to="/Admin" 
+                            onClick={handleAdminClick}
+                            className={isActive("/Admin") ? "active" : ""}
+                        >
+                            <MdDashboard /> Dashboard
+                        </Link>
+                    </li>
+                )}
                 <li className="menu-item">
-                  <Link to="/Admin" onClick={handleAdminClick}>
-                    <MdDashboard /> Dashboard
-                  </Link>
+                    <Link 
+                        to="/Profile"
+                        className={isActive("/Profile") ? "active" : ""}
+                    >
+                        <CgProfile /> My Profile
+                    </Link>
                 </li>
-              )}
-              <li className="menu-item">
-                <Link to="/Profile">
-                  <CgProfile /> My Profile
-                </Link>
-              </li>
-              <li className="menu-item">
-                <Link to="/Orders">
-                  <ImBooks /> Orders
-                </Link>
-              </li>
-              <li className="menu-item">
-                <Link to="/Sellorders">
-                  <MdOutlineSell /> Sell Orders
-                </Link>
-              </li>
+                <li className="menu-item">
+                    <Link 
+                        to="/Orders"
+                        className={isActive("/Orders") ? "active" : ""}
+                    >
+                        <ImBooks /> Orders
+                    </Link>
+                </li>
+                <li className="menu-item">
+                    <Link 
+                        to="/Sellorders"
+                        className={isActive("/Sellorders") ? "active" : ""}
+                    >
+                        <MdOutlineSell /> Sell Orders
+                    </Link>
+                </li>
             </ul>
-          )
-        )}
-      </div>
-    </div>
-  );
-
-
+        </div>
+    );
 }

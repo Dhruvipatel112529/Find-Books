@@ -3,12 +3,14 @@ import "../pages-css/Cart.css";
 import { Navbar } from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../Context/order";
-
+import { FaTrashAlt, FaShoppingCart, FaArrowRight, FaTimes } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 export const Cart = () => {
     const [carts, setCarts] = useState([]);
     const [bookdetail, setBookdetail] = useState([]);
     const [quantities, setQuantities] = useState({});
+    const [loading, setLoading] = useState(true);
     const Navigate = useNavigate();
     const { setCartData } = useCart();
 
@@ -26,9 +28,7 @@ export const Cart = () => {
                 clearcart();
             }
 
-
             if (response.ok) {
-                alert('Item removed from the cart');
                 setCarts(json.cart);
                 setBookdetail(json.books);
             } else {
@@ -40,7 +40,6 @@ export const Cart = () => {
         }
     };
 
-
     const getTotalPrice = () => {
         return bookdetail.reduce((total, item) => {
             return total + item.Price * (quantities[item._id] || 1); 
@@ -49,6 +48,7 @@ export const Cart = () => {
 
     useEffect(() => {
         const fetchCarts = async () => {
+            setLoading(true);
             try {
                 const response = await fetch("http://localhost:2606/api/Cart", {
                     credentials: "include",
@@ -67,11 +67,12 @@ export const Cart = () => {
                 setQuantities(quantityMap); // Update state with latest values
             } catch (error) {
                 console.error("Error fetching book data:", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchCarts();
     }, []);
-
 
     const handleQuantityChange = async (bookid, action) => {
         try {
@@ -102,8 +103,6 @@ export const Cart = () => {
         }
     };
 
-
-
     const clearcart = async() => {
         try {
             const response = await fetch("http://localhost:2606/api/Cart", {
@@ -115,15 +114,14 @@ export const Cart = () => {
             const json = await response.json();
 
             if (response.ok) {
-                alert('Cart cleared successfully');
                 setCarts(json.cart);
                 setBookdetail(json.books);
             } else {
-                alert('Failed');
+                alert('Failed to clear cart');
             }
         } catch (error) {
-            console.error('Error removing item:', error);
-            alert('An error occurred while removing the item');
+            console.error('Error clearing cart:', error);
+            alert('An error occurred while clearing the cart');
         }
     }
 
@@ -143,6 +141,17 @@ export const Cart = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <>
+                <Navbar flag={true}/>
+                <div className="cart-container">
+                    <h1 className="cart-title">Shopping Cart</h1>
+                    <p className="empty-cart">Loading your cart...</p>
+                </div>
+            </>
+        );
+    }
 
     return (
         <>
@@ -150,7 +159,12 @@ export const Cart = () => {
             <div className="cart-container">
                 <h1 className="cart-title">Shopping Cart</h1>
                 {carts.length === 0 ? (
-                    <p className="empty-cart">Your cart is empty!</p>
+                    <div>
+                        <p className="empty-cart">Your cart is empty!</p>
+                        <div className="empty-cart-actions">
+                            <Link to="/">Continue Shopping</Link>
+                        </div>
+                    </div>
                 ) : (
                     <>
                         <div className="cart-items">
@@ -160,38 +174,45 @@ export const Cart = () => {
                                     <div key={item._id} className="cart-item">
                                         {item && (
                                             <>
-                                                {item.Isoldbook==true?"Resell":"New"}
+                                                <span className={`item-type ${item.Isoldbook ? "item-type-resell" : "item-type-new"}`}>
+                                                    {item.Isoldbook ? "Resell" : "New"}
+                                                </span>
                                                 <img
                                                     src={`http://localhost:2606/${item.BookImageURL}`}
                                                     alt={item.BookName}
-                                                    className="img"
+                                                    className="item-image"
                                                 />
                                                 <div className="item-details">
-                                                    <b>{item.BookName}</b>
-                                                    <p>
+                                                    <h3 className="item-name">{item.BookName}</h3>
+                                                    <p className="item-price">
                                                         Price: <b>₹{item.Price}</b>
                                                     </p>
+                                                    {item.Author && (
+                                                        <p className="item-author">Author: {item.Author}</p>
+                                                    )}
                                                 </div>
                                             </>
                                         )}
                                         <div className="item-actions">
-                                            <label>Quantity:</label>
+                                            <span className="quantity-label">Quantity:</span>
                                             <div className="quantity">
                                                 <button
                                                     onClick={() => handleQuantityChange(item._id, "D")}
                                                     disabled={item.Isoldbook}
+                                                    title={item.Isoldbook ? "Resell items have fixed quantity" : "Decrease quantity"}
                                                 >
                                                     -
                                                 </button>
                                                 <input
                                                     type="text"
                                                     min="1"
-                                                    value={quantities[item._id] || 1} // Fetch updated quantity from state
+                                                    value={quantities[item._id] || 1}
                                                     readOnly
                                                 />
                                                 <button
                                                     onClick={() => handleQuantityChange(item._id, "I")}
                                                     disabled={item.Isoldbook}
+                                                    title={item.Isoldbook ? "Resell items have fixed quantity" : "Increase quantity"}
                                                 >
                                                     +
                                                 </button>
@@ -200,8 +221,9 @@ export const Cart = () => {
                                             <button
                                                 className="remove-button"
                                                 onClick={() => handleRemoveItem(item._id)}
+                                                title="Remove from cart"
                                             >
-                                                Remove
+                                                <FaTrashAlt /> Remove
                                             </button>
                                         </div>
                                     </div>
@@ -209,14 +231,22 @@ export const Cart = () => {
                             })}
                         </div>
                         <div className="cart-summary">
-                                <h2>Total: ₹{getTotalPrice()}</h2>
-                                <button className="remove-button" onClick={clearcart}>Clear Cart</button>
-                            <button
-                                className="checkout-button"
-                                onClick={checkout}
-                            >
-                                Checkout
-                            </button>
+                            <div className="summary-header">
+                                <h2 className="summary-title">Order Summary</h2>
+                                <p className="summary-total">₹{getTotalPrice().toFixed(2)}</p>
+                            </div>
+                            <div className="summary-actions">
+                                <button className="clear-cart-button" onClick={clearcart} title="Clear all items">
+                                    <FaTimes /> Clear
+                                </button>
+                                <button
+                                    className="checkout-button"
+                                    onClick={checkout}
+                                    title="Proceed to checkout"
+                                >
+                                    Checkout <FaArrowRight />
+                                </button>
+                            </div>
                         </div>
                     </>
                 )}

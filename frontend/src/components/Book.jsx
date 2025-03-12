@@ -3,6 +3,7 @@ import { Bookcard } from "../components/Bookcard";
 import { Searchbar } from "../components/Searchbar";
 import Load from "./Load";
 import "../components-css/Bookcard.css";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const Book = () => {
   const [bookdata, setBookdata] = useState([]);
@@ -11,24 +12,55 @@ export const Book = () => {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [newArrivals, setNewArrivals] = useState([]);
-  const [Icomics, setIcomics] = useState([]);
-  const [schoolBooks, setschoolBooks] = useState([]);
-  const [Resell, setResell] = useState([]);
+  const [comics, setComics] = useState([]);
+  const [schoolBooks, setSchoolBooks] = useState([]);
+  const [examBooks, setExamBooks] = useState([]);
+  const [literature, setLiterature] = useState([]);
+  const [religiousBooks, setReligiousBooks] = useState([]);
+  const [resellBooks, setResellBooks] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const images = [
     "src/images/ai-generated-8266786_1280.png",
     "src/images/book.jpg",
     "src/images/wp2036900.jpg",
+    // "src/images/library.jpg",
+    // "src/images/bookshelf.jpg",
+    // "src/images/reading-room.jpg",
+    // "src/images/bookstore.jpg",
+    // "src/images/classic-books.jpg"
   ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 2000);
+      if (!isTransitioning) {
+        nextSlide();
+      }
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isTransitioning]);
+
+  const nextSlide = () => {
+    setIsTransitioning(true);
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    setTimeout(() => setIsTransitioning(false), 500);
+  };
+
+  const prevSlide = () => {
+    setIsTransitioning(true);
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+    setTimeout(() => setIsTransitioning(false), 500);
+  };
+
+  const goToSlide = (index) => {
+    setIsTransitioning(true);
+    setCurrentImageIndex(index);
+    setTimeout(() => setIsTransitioning(false), 500);
+  };
 
   const fetchBook = async () => {
     try {
@@ -38,28 +70,63 @@ export const Book = () => {
 
       const tenDaysAgo = new Date();
       tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+      
       if (data) {
+        // Filter new arrivals (books published in the last 10 days)
         setNewArrivals(
           data.filter(
             (book) =>
               new Date(book.Publication_Date) > tenDaysAgo && !book.Isoldbook
           )
         );
-        setIcomics(
+
+        // Filter comics
+        setComics(
           data.filter(
             (book) =>
-              book.Subcategory_id === "6793288e9316fea7c66399b7" &&
+              book.Subcategory_id === "679309dbd59eec505ca71747" &&
               !book.Isoldbook
           )
         );
-        setschoolBooks(
+
+        // Filter school books
+        setSchoolBooks(
           data.filter(
             (book) =>
-              book.Subcategory_id === "679329039316fea7c66399ba" &&
+              book.Subcategory_id === "67930a43d59eec505ca7174f" &&
               !book.Isoldbook
           )
         );
-        setResell(data.filter((book) => book.Isoldbook));
+
+        // Filter exam books
+        setExamBooks(
+          data.filter(
+            (book) =>
+              book.Subcategory_id === "679309fdd59eec505ca7174b" &&
+              !book.Isoldbook
+          )
+        );
+
+        // Filter literature
+        setLiterature(
+          data.filter(
+            (book) =>
+              book.Subcategory_id === "67930adfd59eec505ca71763" &&
+              !book.Isoldbook
+          )
+        );
+
+        // Filter religious books
+        setReligiousBooks(
+          data.filter(
+            (book) =>
+              book.Subcategory_id === "67930b0fd59eec505ca71767" &&
+              !book.Isoldbook
+          )
+        );
+
+        // Filter resell books
+        setResellBooks(data.filter((book) => book.Isoldbook));
       }
       setLoading(false);
     } catch (error) {
@@ -93,11 +160,36 @@ export const Book = () => {
     <>
       <div className="image">
         <div className="slideshow-container">
-          <img
-            src={images[currentImageIndex]}
-            alt="Slideshow"
-            className="slideshow-image"
-          />
+          <button className="slide-nav prev" onClick={prevSlide}>
+            <ChevronLeft />
+          </button>
+          <div className="slideshow-wrapper">
+            {images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`Slide ${index + 1}`}
+                className={`slideshow-image ${index === currentImageIndex ? 'active' : ''}`}
+                style={{
+                  transform: `translateX(${(index - currentImageIndex) * 100}%)`,
+                  transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none'
+                }}
+              />
+            ))}
+          </div>
+          <button className="slide-nav next" onClick={nextSlide}>
+            <ChevronRight />
+          </button>
+          <div className="slide-indicators">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                className={`indicator ${index === currentImageIndex ? 'active' : ''}`}
+                onClick={() => goToSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
         <Searchbar
           search={search}
@@ -121,12 +213,12 @@ export const Book = () => {
             </>
           )}
 
-          {Icomics.length > 0 && (
+          {comics.length > 0 && (
             <>
               <div className="booktype">Comics</div>
               <section className="card-container">
                 <ul className="cards">
-                  {Icomics.map((book) => (
+                  {comics.map((book) => (
                     <Bookcard key={book._id} book={book} />
                   ))}
                 </ul>
@@ -147,12 +239,51 @@ export const Book = () => {
             </>
           )}
 
-          {Resell.length > 0 && (
+          {examBooks.length > 0 && (
+            <>
+              <div className="booktype">Exam Books</div>
+              <section className="card-container">
+                <ul className="cards">
+                  {examBooks.map((book) => (
+                    <Bookcard key={book._id} book={book} />
+                  ))}
+                </ul>
+              </section>
+            </>
+          )}
+
+          {literature.length > 0 && (
+            <>
+              <div className="booktype">Literature</div>
+              <section className="card-container">
+                <ul className="cards">
+                  {literature.map((book) => (
+                    <Bookcard key={book._id} book={book} />
+                  ))}
+                </ul>
+              </section>
+            </>
+          )}
+
+          {religiousBooks.length > 0 && (
+            <>
+              <div className="booktype">Religious Books</div>
+              <section className="card-container">
+                <ul className="cards">
+                  {religiousBooks.map((book) => (
+                    <Bookcard key={book._id} book={book} />
+                  ))}
+                </ul>
+              </section>
+            </>
+          )}
+
+          {resellBooks.length > 0 && (
             <>
               <div className="booktype">Resell Books</div>
               <section className="card-container">
                 <ul className="cards">
-                  {Resell.map((book) => (
+                  {resellBooks.map((book) => (
                     <Bookcard key={book._id} book={book} />
                   ))}
                 </ul>

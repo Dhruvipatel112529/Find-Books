@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import "../pages-css/Login.css";
-import { useNavigate ,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Cookies from 'js-cookie';
 // import User from "../../../backend/Schema/User";
 
-
 export const Login = () => {
   const [isPanelActive, setIsPanelActive] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [Regcredentials, SetRegcredentials] = useState({
     firstName: "",
@@ -22,33 +22,90 @@ export const Login = () => {
 
   const navigate = useNavigate();
 
+  const validateRegistration = () => {
+    const newErrors = {};
+
+    // First Name validation
+    if (Regcredentials.firstName.trim().length < 2) {
+      newErrors.firstName = "First name is required and must be at least 2 characters";
+    }
+
+    // Last Name validation
+    if (Regcredentials.lastName.trim().length < 2) {
+      newErrors.lastName = "Last name is required and must be at least 2 characters";
+    }
+
+    // Email validation
+    if (!Regcredentials.email.toLowerCase().endsWith("@gmail.com")) {
+      newErrors.email = "Please enter a valid Gmail address";
+    }
+
+    // Mobile validation
+    if (!/^\d{10}$/.test(Regcredentials.mobile)) {
+      newErrors.mobile = "Mobile number must be exactly 10 digits";
+    }
+
+    // Password validation
+    if (Regcredentials.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateLogin = () => {
+    const newErrors = {};
+
+    // Email validation
+    if (!Logcredentials.email.toLowerCase().endsWith("@gmail.com")) {
+      newErrors.loginEmail = "Please enter a valid Gmail address";
+    }
+
+    // Password validation
+    if (Logcredentials.password.length < 6) {
+      newErrors.loginPassword = "Password must be at least 6 characters long";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleReg = async (e) => {
     e.preventDefault();
-    try {
-        const response = await fetch("http://localhost:2606/api/User", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(Regcredentials),
-            credentials: "include"
-        });
-
-        const json = await response.json();
-
-        if (json.authtoken) {
-            Cookies.set('token',json.authtoken );
-            alert("Registered successfully!");
-            navigate("/");
-        } else {
-            alert(json.message || "Registration failed");
-        }
-    } catch (error) {
-        alert("An error occurred. Please try again later.");
-        console.error(error);
+    if (!validateRegistration()) {
+      return;
     }
-};
 
-const HandleLog = async (e) => {
+    try {
+      const response = await fetch("http://localhost:2606/api/User", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Regcredentials),
+        credentials: "include"
+      });
+
+      const json = await response.json();
+
+      if (json.authtoken) {
+        Cookies.set('token', json.authtoken);
+        alert("Registered successfully!");
+        navigate("/");
+      } else {
+        alert(json.message || "Registration failed");
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again later.");
+      console.error(error);
+    }
+  };
+
+  const HandleLog = async (e) => {
     e.preventDefault();
+    if (!validateLogin()) {
+      return;
+    }
+
     try {
         const response = await fetch("http://localhost:2606/api/login", {
             method: "POST",
@@ -71,18 +128,26 @@ const HandleLog = async (e) => {
             alert("Invalid credentials");
         }
     } catch (error) {
-        console.error(error.message);
+      console.error(error.message);
     }
-};
+  };
 
   const RegChange = (e) => {
     const { name, value } = e.target;
     SetRegcredentials((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
   };
 
   const LogChange = (e) => {
     const { name, value } = e.target;
     Setlogcredentials((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[`login${name.charAt(0).toUpperCase() + name.slice(1)}`]) {
+      setErrors(prev => ({ ...prev, [`login${name.charAt(0).toUpperCase() + name.slice(1)}`]: "" }));
+    }
   };
 
   return (
@@ -105,11 +170,67 @@ const HandleLog = async (e) => {
           </a>
         </div> */}
         <span>or use your email for registration</span>
-        <input type="text" name="firstName" id="firstName" placeholder="First name" value={Regcredentials.firstName} onChange={RegChange}/>
-        <input type="text" name="lastName" id="lastName" placeholder="Last name" value={Regcredentials.lastName} onChange={RegChange}/>
-        <input type="email" name="email" id="email" placeholder="Email" value={Regcredentials.email} onChange={RegChange}/>
-        <input type="text" name="mobile" id="mobile" placeholder="Mobile No" value={Regcredentials.mobile} onChange={RegChange}/>
-        <input type="password" name="password" id="password" placeholder="Password" value={Regcredentials.password} onChange={RegChange} />
+        <div className="input-group">
+          <input
+            type="text"
+            name="firstName"
+            id="firstName"
+            placeholder="First name"
+            value={Regcredentials.firstName}
+            onChange={RegChange}
+            className={errors.firstName ? 'error' : ''}
+          />
+          {errors.firstName && <span className="error-message">{errors.firstName}</span>}
+        </div>
+        <div className="input-group">
+          <input
+            type="text"
+            name="lastName"
+            id="lastName"
+            placeholder="Last name"
+            value={Regcredentials.lastName}
+            onChange={RegChange}
+            className={errors.lastName ? 'error' : ''}
+          />
+          {errors.lastName && <span className="error-message">{errors.lastName}</span>}
+        </div>
+        <div className="input-group">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            placeholder="Email"
+            value={Regcredentials.email}
+            onChange={RegChange}
+            className={errors.email ? 'error' : ''}
+          />
+          {errors.email && <span className="error-message">{errors.email}</span>}
+        </div>
+        <div className="input-group">
+          <input
+            type="text"
+            name="mobile"
+            id="mobile"
+            placeholder="Mobile No"
+            value={Regcredentials.mobile}
+            onChange={RegChange}
+            className={errors.mobile ? 'error' : ''}
+            maxLength="10"
+          />
+          {errors.mobile && <span className="error-message">{errors.mobile}</span>}
+        </div>
+        <div className="input-group">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Password"
+            value={Regcredentials.password}
+            onChange={RegChange}
+            className={errors.password ? 'error' : ''}
+          />
+          {errors.password && <span className="error-message">{errors.password}</span>}
+        </div>
         <button>Register</button>
       </form>
     </div>
@@ -129,8 +250,30 @@ const HandleLog = async (e) => {
           </a>
         </div> */}
         <span>or use your account</span>
-        <input type="email" name="email" id="email2" placeholder="Email" value={Logcredentials.email} onChange={LogChange} />
-        <input type="password" name="password" id="password2" placeholder="Password" value={Logcredentials.password} onChange={LogChange}/><br/>
+        <div className="input-group">
+          <input
+            type="email"
+            name="email"
+            id="email2"
+            placeholder="Email"
+            value={Logcredentials.email}
+            onChange={LogChange}
+            className={errors.loginEmail ? 'error' : ''}
+          />
+          {errors.loginEmail && <span className="error-message">{errors.loginEmail}</span>}
+        </div>
+        <div className="input-group">
+          <input
+            type="password"
+            name="password"
+            id="password2"
+            placeholder="Password"
+            value={Logcredentials.password}
+            onChange={LogChange}
+            className={errors.loginPassword ? 'error' : ''}
+          />
+          {errors.loginPassword && <span className="error-message">{errors.loginPassword}</span>}
+        </div>
         <p className="forget"><Link to="/ForgotPassword">Forgot your password?</Link></p><br/>
         <button>Login</button>
       </form>

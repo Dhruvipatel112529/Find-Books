@@ -1,84 +1,148 @@
 /* Useraddress.css */
 
-.address-form {
-    max-width: 600px;
-    margin: 5% auto;
+.ua-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
     padding: 20px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease-in-out;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 16px;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.form-input {
+.ua-form {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-    transition: border-color 0.3s ease-in-out;
+    max-width: 600px;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.form-input:focus {
-    border-color: #3498db;
+.ua-title {
+    color: #2c3e50;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.ua-form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.ua-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 8px;
+}
+
+.ua-input,
+.ua-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #2d3748;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.ua-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.ua-input:focus,
+.ua-textarea:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
     outline: none;
 }
 
-.submit-btn {
+.ua-input::placeholder,
+.ua-textarea::placeholder {
+    color: #a0aec0;
+}
+
+.ua-input-error {
+    border-color: #e53e3e;
+}
+
+.ua-error-text {
+    display: block;
+    color: #e53e3e;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.ua-submit-btn {
     width: 100%;
-    padding: 12px;
-    border: none;
-    background: #2ecc71;
+    padding: 14px;
+    background: linear-gradient(45deg, #ff9800, #ff5722);
     color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 6px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease-in-out;
+    transition: all 0.3s ease;
+    margin-top: 24px;
 }
 
-.submit-btn:hover {
-    background: #27ae60;
+.ua-submit-btn:hover {
+    background: linear-gradient(45deg, #ff5722, #ff9800);
+    transform: translateY(-1px);
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .address-form {
-        width: 90%;
+.ua-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .ua-container {
         padding: 15px;
     }
+
+    .ua-form {
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    .ua-title {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    .ua-form-group {
+        margin-bottom: 16px;
+    }
+
+    .ua-input,
+    .ua-textarea {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    .ua-submit-btn {
+        padding: 12px;
+        font-size: 15px;
+        margin-top: 20px;
+    }
 }
 
-@media (max-width: 480px) {
-    .address-form {
-        width: 95%;
-        padding: 10px;
-    }
+/* Animation for error messages */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
 
-    .form-group label {
-        font-size: 14px;
-    }
-
-    .form-input {
-        font-size: 14px;
-        padding: 8px;
-    }
-
-    .submit-btn {
-        font-size: 16px;
-        padding: 10px;
-    }
+.ua-input-error {
+    animation: shake 0.3s ease-in-out;
 }
 

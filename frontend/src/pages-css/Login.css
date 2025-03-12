@@ -223,4 +223,41 @@ button:active {
   }
 }
 
+.input-group {
+    width: 100%;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-group input {
+    width: 100%;
+}
+
+.error {
+    border-color: #ff3b30 !important;
+    background-color: #fff8f8;
+}
+
+.error-message {
+    color: #ff3b30;
+    font-size: 12px;
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+    width: 100%;
+    text-align: left;
+    padding-left: 5px;
+}
+
+/* Add this to your existing animations */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.error {
+    animation: shake 0.3s ease-in-out;
+}
+
 

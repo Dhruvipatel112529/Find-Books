@@ -7,7 +7,9 @@ const books = require("./Schema/Book");
 const bookData = require("./data.json");
 const cookieparser = require('cookie-parser');
 const dotenv = require("dotenv");
+const reportRoutes = require('./Routes/report');
 dotenv.config();
+
 
 app.use(cors({
     origin: "http://localhost:5173", // Allow only your frontend
@@ -32,6 +34,7 @@ app.use("/api", require("./Routes/Profile"));
 app.use("/api", require("./Routes/AddRatings"));
 app.use("/api", require("./Routes/SellOrders"));
 app.use("/api", require("./Routes/Payment"));
+app.use('/api/report', reportRoutes);
 
 app.listen(PORT,'0.0.0.0',() => {
     console.log(`your application run at http://localhost:${PORT}`);

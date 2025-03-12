@@ -45,8 +45,19 @@
     outline: none;
   }
   
+  .addcat {
+    font-size: 1rem;
+    padding: 8px 13px;
+    margin-top: 5%;
+    border-radius: 8px; /* Rounded corners */
+    border: none; /* Optional: Removes default border */
+    background-color: #333; /* Optional: Adds a dark background */
+    color: white; /* Optional: Sets text color */
+    cursor: pointer; /* Makes it clear it's clickable */
+    transition: all 0.3s ease-in-out; /* Smooth hover effect */
+}
   
-  button:hover {
+  .addcat:hover {
     background: linear-gradient(45deg,#ff5722, #ff9800 );
   }
   
