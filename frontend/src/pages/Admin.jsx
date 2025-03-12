@@ -28,7 +28,7 @@ const Admin = () => {
                     endDate: dateRange.endDate,
                     interval: '6months'
                 })
-            });
+            }); 
 
             const data = await response.json();
             if (data.success) {
