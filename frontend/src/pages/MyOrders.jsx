@@ -33,15 +33,9 @@ export const MyOrders = () => {
   }, []);
 
   const updateOrderStatus = async (orderId, newStatus) => {
-    setOrder((prevOrders) =>
-      prevOrders.map((order) =>
-        order._id === orderId ? { ...order, Order_Status: newStatus } : order
-      )
-    );
-
     try {
       const response = await fetch(
-        `http://localhost:2606/api/${orderId}/Order`,
+        `http://localhost:2606/api/${orderId}/status`,
         {
           method: "PUT",
           headers: {
@@ -55,20 +49,16 @@ export const MyOrders = () => {
       if (!response.ok) {
         throw new Error("Failed to update order status");
       }
+
+      // Update local state only after successful API call
+      setOrder((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId ? { ...order, Order_Status: newStatus } : order
+        )
+      );
     } catch (error) {
       console.error("Error updating order status:", error);
       alert("Failed to update order status. Please try again.");
-
-      setOrder((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === orderId
-            ? {
-                ...order,
-                Order_Status: newStatus === "Shipped" ? "Pending" : "Shipped",
-              }
-            : order
-        )
-      );
     }
   };
 
@@ -81,13 +71,15 @@ export const MyOrders = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case "shipped":
+    switch (status) {
+      case "Shipped":
         return "status-shipped";
-      case "pending":
+      case "Pending":
         return "status-pending";
-      case "cancel":
+      case "Cancelled":
         return "status-cancelled";
+      case "Delivered":
+        return "status-delivered";
       default:
         return "status-default";
     }

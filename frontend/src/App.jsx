@@ -29,6 +29,7 @@ import { EditProfile } from './pages/EditProfile';
 import { DeliveryDashboard } from './pages/DeliveryDashboard';
 import { DeliveryDetail } from './pages/DeliveryDetail';
 import Reports from './pages/Reports';
+import { AdminOrders } from './pages/AdminOrders';
 
 export const App = () => {
   const router = createBrowserRouter([
@@ -57,6 +58,7 @@ export const App = () => {
         {path : "/Admin/ViewOrder" , element : <AdminRoute><AdminViewOrder/></AdminRoute> },
         { path : "/Admin/AddCat" , element:  <AdminRoute><AddCat/></AdminRoute> },
         { path : "/Admin/Reports" , element:  <AdminRoute><Reports/></AdminRoute> },
+        { path : "/Admin/Orders" , element:  <AdminRoute><AdminOrders/></AdminRoute> },
          { path: "/deliverydashboard", element: <DeliveryDashboard /> },
          { path: "/deliverydetail", element: <DeliveryDetail/>}
   ]);
