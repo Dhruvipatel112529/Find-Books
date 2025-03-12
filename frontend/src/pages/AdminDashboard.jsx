@@ -19,7 +19,7 @@ import { autoTable } from 'jspdf-autotable';
 
 const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
-
+  console.log("User On UI", user);
   if (loading) {
     return (
       <div>
@@ -28,7 +28,7 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  if (!user || user.Role[0].isAdmin !== true) {
+  if (!user || user.isAdmin !== true) {
     return <Navigate to="/" />;
   }
 

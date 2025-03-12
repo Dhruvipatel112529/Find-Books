@@ -8,7 +8,8 @@ const Order = require("../Schema/Order");
 const Cart = require("../Schema/Cart");
 const authenticateToken = require("../middleware/AuthMid");
 
-
+// Valid order statuses
+const VALID_ORDER_STATUSES = ["Pending", "Shipped", "Delivered", "Cancelled"];
 
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
 const RAZORPAY_SECRET = process.env.RAZORPAY_SECRET;
@@ -95,30 +96,68 @@ router.get("/verify", authenticateToken, async (req, res) => {
 
 router.put('/addorder', authenticateToken, async (req, res) => {
     try {
-        const { cartid, TotalAmount } = req.body;  // Extract cartid and totalamount from request body
+        const { cartid, TotalAmount, status } = req.body;
 
         let cart = await Cart.findOne({_id: cartid.cartid });
+        console.log('cartId', cart);
         if (!cart) {
             return res.status(404).json({ message: "Cart not found" });
         }
 
         let order = await Order.findOne({ Cart_id: cartid.cartid });
+        console.log('order s', order);
         if (!order) {
             return res.status(404).json({ message: "Order not found for this cart" });
         }
 
         const updatedBooks = cart.books.map(item => ({
-            book_id: item.book_id,   // Assuming book_id is stored directly
-            book_quantity: item.book_quantity,  // Ensure correct property name
+            book_id: item.book_id,
+            book_quantity: item.book_quantity,
         }));
 
+        // If status is provided and valid, update it
+        if (status && VALID_ORDER_STATUSES.includes(status)) {
+            order.Order_Status = status;
+        }
+        
         order.Total_Amount = TotalAmount;
         order.books = updatedBooks;
+        console.log('order after', order);
         await order.save();
 
         res.status(200).json({ message: "Order updated successfully", order });
     } catch (error) {
         console.error("Error processing order:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+// Add a new route for updating order status
+router.put('/:orderId/status', authenticateToken, [
+    body('status')
+        .isIn(VALID_ORDER_STATUSES)
+        .withMessage(`Status must be one of: ${VALID_ORDER_STATUSES.join(', ')}`),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const { orderId } = req.params;
+        const { status } = req.body;
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        order.Order_Status = status;
+        await order.save();
+
+        res.status(200).json({ message: "Order status updated successfully", order });
+    } catch (error) {
+        console.error("Error updating order status:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 });
