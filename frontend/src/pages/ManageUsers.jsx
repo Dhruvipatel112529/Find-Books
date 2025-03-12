@@ -122,7 +122,7 @@ export const ManageUsers = () => {
                   </td>
                   <td className="centered">{user.Email}</td>
                   <td className="centered">
-                    {user.isAdmin ? "Admin" : "User"}
+                    {user.Role[0].isAdmin ? "Admin" : user.Role[0].isDeliveryPerson ?"DeliveryPerson":"User" }
                   </td>
                   <td className="centered">
                     <div className="actions centered">

@@ -5,6 +5,8 @@ const Order = require("../Schema/Order");
 const Authmid = require("../middleware/AuthMid");
 const Book = require("../Schema/Book");
 const Cart = require("../Schema/Cart");
+const User = require("../Schema/User");
+const Payment = require("../Schema/Payment");
 
 router.post(
   "/Order",
@@ -90,7 +92,7 @@ router.get("/Order", Authmid, async (req, res) => {
   }
 });
 
-router.get("/Orders", Authmid, async (req, res) => {
+router.get("/Orders", Authmid,async (req, res) => {
   try {
     const orders = await Order.find({});
 
@@ -98,7 +100,13 @@ router.get("/Orders", Authmid, async (req, res) => {
       return res.status(404).json({ message: "No orders found" });
     }
 
-    res.json({ orders: orders });
+    const userIds = orders.map(order => order.User_id);
+    const orderIds = orders.map(order => order._id);
+
+    const user = await User.find({ _id: { $in: userIds } });
+    const payment = await Payment.find({ order_id: { $in: orderIds } });
+
+    res.json({ orders: orders , user:user , payment:payment, delivery:req.userId});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -135,12 +143,17 @@ router.put(
 
     try {
       const { orderId } = req.params;
-      const { status } = req.body;
+      const { status, userdetail } = req.body;
 
-      // Find and update the order status
-      const updatedOrder = await Order.findByIdAndUpdate(orderId, {
-        Order_Status: status,
-      });
+      let updateData = { Order_Status: status };
+
+      // If the user is a delivery person, assign Delivery_User_id
+      if (userdetail && userdetail.Role[0].isDeliveryPerson === true) {
+        updateData.Delivery_User_id = req.userId;
+      }
+
+      // Find and update the order
+      const updatedOrder = await Order.findByIdAndUpdate(orderId, updateData, { new: true });
 
       if (!updatedOrder) {
         return res.status(404).json({ message: "Order not found" });
@@ -156,6 +169,7 @@ router.put(
     }
   }
 );
+
 
 module.exports = router;
 

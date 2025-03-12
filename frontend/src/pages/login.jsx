@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../pages-css/Login.css";
 import { useNavigate ,Link } from "react-router-dom";
 import Cookies from 'js-cookie';
+// import User from "../../../backend/Schema/User";
 
 
 export const Login = () => {
@@ -59,8 +60,13 @@ const HandleLog = async (e) => {
         const json = await response.json();
         if (json.success && json.authtoken) {
             Cookies.set('token', json.authtoken);
-            alert("Login successful!");
+          alert("Login successful!");
+          if (json.user.Role[0].isDeliveryPerson===true) {
+            navigate("/profile")
+          } else {
             navigate("/");
+          }
+            
         } else {
             alert("Invalid credentials");
         }

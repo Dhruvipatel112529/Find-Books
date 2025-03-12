@@ -34,11 +34,20 @@ const UserSchema = new Schema({
         required: true,
         minlength: 6, 
     },
-    isAdmin: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
+
+    Role: [{
+        isAdmin: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
+        isDeliveryPerson: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
+    }],
+    
     otp: {
         type: String
     },

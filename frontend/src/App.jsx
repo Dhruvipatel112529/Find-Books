@@ -16,43 +16,47 @@ import { Useraddress } from './pages/Useraddress';
 import { PaymentForm } from './pages/PaymentForm';
 import { AdminBookForm } from './components/AdminBookForm';
 import { AdminRoute } from './pages/AdminDashboard';
-import  {ManageUsers}  from './pages/ManageUsers';
-import  {ManageBooks}  from './pages/ManageBooks';
+import { ManageUsers } from './pages/ManageUsers';
+import { ManageBooks } from './pages/ManageBooks';
 import ForgotPassword from './pages/ForgotPassword';
 import { Payment } from './pages/Payment';
 import { BooksPage } from './pages/BooksPage';
 import { AdminAddUser } from './pages/AdminAddUser';
 import { AdminViewOrder } from './pages/AdminViewOrder';
 import { AddCat } from './pages/AddCat';
+import { DeliveryDashboard } from './pages/DeliveryDashboard';
+import { DeliveryDetail } from './pages/DeliveryDetail';
 
 export const App = () => {
   const router = createBrowserRouter([
-        { path: "/", element: <Index /> },
-        { path: "/cart", element: <Cart /> },
-        { path: "/profile", element: <Profile /> },
-       // { path: "/category", element: <Category /> },
-        { path: "/bookdetail", element: <Bookdetail /> },
-        { path: "/bookform", element:  <BookForm UserRole='Reseller'/>},
-        { path: "/Resellerpaymentform", element: <ResellerPaymentForm /> },
-        { path: "/login", element: <Login/> },
-        { path: "/Orders" ,  element: <MyOrders/>},
-        { path: "/SellOrders", element:<SellOrders/>},
-        { path: "/Admin", element: <AdminRoute><AdminDashboard/></AdminRoute>},
-        { path: "/Useraddress", element: <Useraddress /> },
-        { path: "/PaymentForm", element: <PaymentForm /> },
-        { path: "/Admin/ManageBooks/AddBook" , element : <AdminRoute><AdminBookForm UserRole='Admin'/></AdminRoute>},
-        { path: "/Admin/ManageUsers" , element : <AdminRoute><ManageUsers/></AdminRoute>},
-        { path: "/Admin/ManageBooks" , element : <AdminRoute><ManageBooks/></AdminRoute>},
-        { path: "/MyOrder", element: <MyOrders /> },
-        { path: "/ForgotPassword" ,element:<ForgotPassword/>},
-        {path : "/payment", element:<Payment/>},
-        {path : "/books/:category/:subcategory", element:<BooksPage/>},
-        {path : "/Admin/ManageUsers/adduser" ,  element: <AdminRoute><AdminAddUser/></AdminRoute>},
-        {path : "/Admin/ViewOrder" , element : <AdminRoute><AdminViewOrder/></AdminRoute> },
-        { path : "/Admin/AddCat" , element:  <AdminRoute><AddCat/></AdminRoute> }
+    { path: "/", element: <Index /> },
+    { path: "/cart", element: <Cart /> },
+    { path: "/profile", element: <Profile /> },
+    // { path: "/category", element: <Category /> },
+    { path: "/bookdetail", element: <Bookdetail /> },
+    { path: "/bookform", element: <BookForm UserRole='Reseller' /> },
+    { path: "/Resellerpaymentform", element: <ResellerPaymentForm /> },
+    { path: "/login", element: <Login /> },
+    { path: "/Orders", element: <MyOrders /> },
+    { path: "/SellOrders", element: <SellOrders /> },
+    { path: "/Admin", element: <AdminRoute><AdminDashboard /></AdminRoute> },
+    { path: "/Useraddress", element: <Useraddress /> },
+    { path: "/PaymentForm", element: <PaymentForm /> },
+    { path: "/Admin/ManageBooks/AddBook", element: <AdminRoute><AdminBookForm UserRole='Admin' /></AdminRoute> },
+    { path: "/Admin/ManageUsers", element: <AdminRoute><ManageUsers /></AdminRoute> },
+    { path: "/Admin/ManageBooks", element: <AdminRoute><ManageBooks /></AdminRoute> },
+    { path: "/MyOrder", element: <MyOrders /> },
+    { path: "/ForgotPassword", element: <ForgotPassword /> },
+    { path: "/payment", element: <Payment /> },
+    { path: "/books/:category/:subcategory", element: <BooksPage /> },
+    { path: "/Admin/ManageUsers/adduser", element: <AdminRoute><AdminAddUser /></AdminRoute> },
+    { path: "/Admin/ViewOrder", element: <AdminRoute><AdminViewOrder /></AdminRoute> },
+    { path: "/Admin/AddCat", element: <AdminRoute><AddCat /></AdminRoute> },
+    { path: "/deliverydashboard", element: <DeliveryDashboard /> },
+    { path: "/deliverydetail", element: <DeliveryDetail/>}
   ]);
 
   return (
-      <RouterProvider router={router} />
-    )
+    <RouterProvider router={router} />
+  )
 };

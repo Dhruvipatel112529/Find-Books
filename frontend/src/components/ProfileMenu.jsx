@@ -10,6 +10,7 @@ import { FaBars, FaShoppingCart, FaUserCircle } from 'react-icons/fa';
 
 export function ProfileMenu() {
   const [admin, setAdmin] = useState(null);
+  const [deliveryperson, setDeliveryperson] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -20,10 +21,11 @@ export function ProfileMenu() {
           credentials: "include",
         });
         const json = await response.json();
-        setAdmin(json.user.isAdmin);
+        setAdmin(json.user.Role[0].isAdmin);
+        setDeliveryperson(json.user.Role[0].isDeliveryPerson)
 
-        if(loading){
-          return <div><Load/></div>;
+        if (loading) {
+          return <div><Load /></div>;
         }
       } catch (error) {
         console.error(error);
@@ -35,29 +37,55 @@ export function ProfileMenu() {
   }, []);
 
   const handleAdminClick = (e) => {
-    if (admin) {
-      e.preventDefault(); // Prevent default <Link> behavior
-      navigate("/Admin");
-    }
+    e.preventDefault(); // Prevent default <Link> behavior
+    navigate("/Admin");
   };
 
   return (
     <div className="profile-container">
       <div className="side-menu">
-        <h3 className="menu-title"><FaUserCircle/> My Account</h3>
-        {!loading && (
+        <h3 className="menu-title">
+          <FaUserCircle /> My Account
+        </h3>
+        {deliveryperson ? (
           <ul>
-            {admin && (
-              <li className="menu-item">
-                <Link to="/Admin" onClick={handleAdminClick}><MdDashboard/> Dashboard</Link>
-              </li>
-            )}
-            <li className="menu-item"><Link to="/Profile"><CgProfile/> My Profile</Link></li>
-            <li className="menu-item"><Link to="/Orders"><ImBooks/> Orders</Link></li>
-            <li className="menu-item"><Link to="/Sellorders"><MdOutlineSell/> Sell Orders</Link></li>
+            <li className="menu-item">
+              <Link to="/deliverydashboard">
+                <MdDashboard /> Dashboard
+              </Link>
+            </li>
           </ul>
+        ) : (
+          !loading && (
+            <ul>
+              {admin && (
+                <li className="menu-item">
+                  <Link to="/Admin" onClick={handleAdminClick}>
+                    <MdDashboard /> Dashboard
+                  </Link>
+                </li>
+              )}
+              <li className="menu-item">
+                <Link to="/Profile">
+                  <CgProfile /> My Profile
+                </Link>
+              </li>
+              <li className="menu-item">
+                <Link to="/Orders">
+                  <ImBooks /> Orders
+                </Link>
+              </li>
+              <li className="menu-item">
+                <Link to="/Sellorders">
+                  <MdOutlineSell /> Sell Orders
+                </Link>
+              </li>
+            </ul>
+          )
         )}
       </div>
     </div>
   );
+
+
 }

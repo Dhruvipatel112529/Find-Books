@@ -66,12 +66,20 @@ export const MyOrders = () => {
           order._id === orderId
             ? {
                 ...order,
-                Order_Status: newStatus === "Shipped" ? "pending" : "Shipped",
+                Order_Status: newStatus === "Shipped" ? "Pending" : "Shipped",
               }
             : order
         )
       );
     }
+  };
+
+  const formatDate = (isoDate) => {
+    if (!isoDate) return "";
+    const dateObj = new Date(isoDate);
+    return `${dateObj.getDate().toString().padStart(2, "0")}-${(dateObj.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${dateObj.getFullYear()}`;
   };
 
   return (
@@ -87,7 +95,7 @@ export const MyOrders = () => {
                 <div key={orderItem._id} className="myordercard">
             
                   <p>
-                    <strong>Order Date:</strong> <span>{orderItem.Order_Date}</span>
+                    <strong>Order Date:</strong> <span>{formatDate(orderItem.Order_Date)}</span>
                   </p>
                   <p>
                     <strong>Total Amount:</strong> <span>₹{orderItem.Total_Amount}</span>
@@ -135,11 +143,10 @@ export const MyOrders = () => {
                         );
                       })}
                   </div>
-                  {orderItem.Order_Status === "cancel" || orderItem.Order_Status === "Shipped" ? "" :
+                  {orderItem.Order_Status === "Cancelled" || orderItem.Order_Status === "Shipped" || orderItem.Order_Status === "Delivered" ? "" :
                   <button
-                    onClick={() => updateOrderStatus(orderItem._id, "cancel")}
+                      onClick={() => updateOrderStatus(orderItem._id, "Cancelled")}
                   >
-                    {" "}
                     Cancel Order
                   </button>}
                 </div>

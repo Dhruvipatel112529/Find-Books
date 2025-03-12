@@ -24,7 +24,7 @@ const AdminRoute = ({ children }) => {
     ); // You can replace this with a spinner or nothing at all
   }
 
-  if (!user || user.isAdmin !== true) {
+  if (!user || user.Role[0].isAdmin !== true) {
     return <Navigate to="/" />;
   }
 
@@ -172,7 +172,7 @@ const AdminDashboard = () => {
           order._id === orderId
             ? {
                 ...order,
-                Order_Status: newStatus === "Shipped" ? "pending" : "Shipped",
+                Order_Status: newStatus === "Shipped" ? "Pending" : "Shipped",
               }
             : order
         )
@@ -305,21 +305,24 @@ const AdminDashboard = () => {
                     <button className="action-btn" onClick={() => viewOrder(order, bookdata)}>View</button>
                   </td>
                   <td>
-                    {order.Order_Status === "Shipped" ? (
-                      <button
-                        className="action-btn"
-                        onClick={() => updateOrderStatus(order._id, "pending")}
-                      >
-                        pending
+                    {["Delivered", "Cancelled"].includes(order.Order_Status) ? (
+                      <button className="action-btn" disabled>
+                        {order.Order_Status}
                       </button>
                     ) : (
                       <button
                         className="action-btn"
-                        onClick={() => updateOrderStatus(order._id, "Shipped")}
+                        onClick={() =>
+                          updateOrderStatus(
+                            order._id,
+                            order.Order_Status === "Shipped" ? "Pending" : "Shipped"
+                          )
+                        }
                       >
-                        Shipped
+                        {order.Order_Status === "Shipped" ? "Pending" : "Shipped"}
                       </button>
                     )}
+
                   </td>
                 </tr>
               ))}

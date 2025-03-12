@@ -1,0 +1,109 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.delivery-process-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Page Title */
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Section Styles */
+.order-details {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.order-details h2 {
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.order-details p {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+/* OTP Section */
+.otp-section {
+    text-align: center;
+    background: #f1f1f1;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.otp-section input {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.verify-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px;
+}
+
+.verify-button:hover {
+    background: #218838;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .delivery-process-container {
+        max-width: 95%;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .order-details {
+        padding: 10px;
+    }
+
+    .order-details h2 {
+        font-size: 18px;
+    }
+
+    .order-details p {
+        font-size: 14px;
+    }
+
+    .otp-section input {
+        font-size: 14px;
+    }
+
+    .verify-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}

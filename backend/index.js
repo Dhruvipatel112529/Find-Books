@@ -33,6 +33,6 @@ app.use("/api", require("./Routes/AddRatings"));
 app.use("/api", require("./Routes/SellOrders"));
 app.use("/api", require("./Routes/Payment"));
 
-app.listen(PORT,() => {
+app.listen(PORT,'0.0.0.0',() => {
     console.log(`your application run at http://localhost:${PORT}`);
 })

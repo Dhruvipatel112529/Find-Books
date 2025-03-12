@@ -1,0 +1,81 @@
+.dashboard-container {
+         padding: 20px;
+         max-width: 900px;
+         margin: auto;
+         font-family: Arial, sans-serif;
+     }
+
+     .dashboard-title {
+         font-size: 24px;
+         font-weight: bold;
+         margin-bottom: 20px;
+     }
+
+     .stats-container {
+         display: flex;
+         justify-content: space-between;
+         gap: 10px;
+         margin-bottom: 20px;
+     }
+
+     .card {
+         background: #f8f8f8;
+         padding: 15px;
+         border-radius: 8px;
+         text-align: center;
+         flex: 1;
+     }
+
+     .card-title {
+         font-size: 14px;
+         color: #555;
+     }
+
+     .card-value {
+         font-size: 20px;
+         font-weight: bold;
+     }
+
+     .orders-container {
+         background: white;
+         padding: 15px;
+         border-radius: 8px;
+         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+     }
+
+     .orders-title {
+         font-size: 18px;
+         font-weight: bold;
+         margin-bottom: 10px;
+     }
+
+     .orders-table {
+         width: 100%;
+         border-collapse: collapse;
+     }
+
+     .orders-table th,
+     .orders-table td {
+         border: 1px solid #ddd;
+         padding: 10px;
+         text-align: left;
+     }
+
+     .action-button {
+         padding: 8px 12px;
+         border: none;
+         cursor: pointer;
+         color: white;
+         border-radius: 5px;
+     }
+
+     .yellow {
+         background: orange;
+     }
+
+     .green {
+         background: green;
+     }
+
+    
+
