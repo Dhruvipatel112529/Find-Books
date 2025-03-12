@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../pages-css/Login.css";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from 'js-cookie';
+// import User from "../../../backend/Schema/User";
 
 export const Login = () => {
   const [isPanelActive, setIsPanelActive] = useState(false);
@@ -106,21 +107,26 @@ export const Login = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:2606/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Logcredentials),
-        credentials: "include"
-      });
+        const response = await fetch("http://localhost:2606/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(Logcredentials),
+            credentials: "include"
+        });
 
-      const json = await response.json();
-      if (json.success && json.authtoken) {
-        Cookies.set('token', json.authtoken);
-        alert("Login successful!");
-        navigate("/");
-      } else {
-        alert("Invalid credentials");
-      }
+        const json = await response.json();
+        if (json.success && json.authtoken) {
+            Cookies.set('token', json.authtoken);
+          alert("Login successful!");
+          if (json.user.Role[0].isDeliveryPerson===true) {
+            navigate("/profile")
+          } else {
+            navigate("/");
+          }
+            
+        } else {
+            alert("Invalid credentials");
+        }
     } catch (error) {
       console.error(error.message);
     }

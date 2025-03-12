@@ -16,15 +16,18 @@ import { Useraddress } from './pages/Useraddress';
 import { PaymentForm } from './pages/PaymentForm';
 import { AdminBookForm } from './components/AdminBookForm';
 import { AdminRoute } from './pages/AdminDashboard';
-import  {ManageUsers}  from './pages/ManageUsers';
-import  {ManageBooks}  from './pages/ManageBooks';
+import { ManageUsers } from './pages/ManageUsers';
+import { ManageBooks } from './pages/ManageBooks';
 import ForgotPassword from './pages/ForgotPassword';
 import { Payment } from './pages/Payment';
 import { BooksPage } from './pages/BooksPage';
 import { AdminAddUser } from './pages/AdminAddUser';
 import { AdminViewOrder } from './pages/AdminViewOrder';
 import { AddCat } from './pages/AddCat';
+
 import { EditProfile } from './pages/EditProfile';
+import { DeliveryDashboard } from './pages/DeliveryDashboard';
+import { DeliveryDetail } from './pages/DeliveryDetail';
 import Reports from './pages/Reports';
 
 export const App = () => {
@@ -53,10 +56,12 @@ export const App = () => {
         {path : "/Admin/ManageUsers/adduser" ,  element: <AdminRoute><AdminAddUser/></AdminRoute>},
         {path : "/Admin/ViewOrder" , element : <AdminRoute><AdminViewOrder/></AdminRoute> },
         { path : "/Admin/AddCat" , element:  <AdminRoute><AddCat/></AdminRoute> },
-        { path : "/Admin/Reports" , element:  <AdminRoute><Reports/></AdminRoute> }
+        { path : "/Admin/Reports" , element:  <AdminRoute><Reports/></AdminRoute> },
+         { path: "/deliverydashboard", element: <DeliveryDashboard /> },
+         { path: "/deliverydetail", element: <DeliveryDetail/>}
   ]);
 
   return (
-      <RouterProvider router={router} />
-    )
+    <RouterProvider router={router} />
+  )
 };

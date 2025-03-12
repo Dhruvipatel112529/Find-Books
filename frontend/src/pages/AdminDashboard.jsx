@@ -28,7 +28,7 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  if (!user || user.isAdmin !== true) {
+  if (!user || user.Role[0].isAdmin !== true) {
     return <Navigate to="/" />;
   }
 
@@ -179,7 +179,7 @@ const AdminDashboard = () => {
           order._id === orderId
             ? {
                 ...order,
-                Order_Status: newStatus === "Shipped" ? "pending" : "Shipped",
+                Order_Status: newStatus === "Shipped" ? "Pending" : "Shipped",
               }
             : order
         )
@@ -550,23 +550,26 @@ const AdminDashboard = () => {
                               View
                             </button>
                           </td>
-                          <td>
-                            {order.Order_Status.toLowerCase() === "shipped" ? (
-                              <button
-                                className="action-btn"
-                                onClick={() => updateOrderStatus(order._id, "pending")}
-                              >
-                                Pending
-                              </button>
-                            ) : (
-                              <button
-                                className="action-btn"
-                                onClick={() => updateOrderStatus(order._id, "shipped")}
-                              >
-                                Shipped
-                              </button>
-                            )}
-                          </td>
+                           <td>
+                    {["Delivered", "Cancelled"].includes(order.Order_Status) ? (
+                      <button className="action-btn" disabled>
+                        {order.Order_Status}
+                      </button>
+                    ) : (
+                      <button
+                        className="action-btn"
+                        onClick={() =>
+                          updateOrderStatus(
+                            order._id,
+                            order.Order_Status === "Shipped" ? "Pending" : "Shipped"
+                          )
+                        }
+                      >
+                        {order.Order_Status === "Shipped" ? "Pending" : "Shipped"}
+                      </button>
+                    )}
+
+                  </td>
                         </tr>
                       );
                     })}

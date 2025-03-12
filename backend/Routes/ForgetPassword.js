@@ -22,7 +22,7 @@ export const sendVerifyOtp = async (req, res) => {
     await user.save();
 
     const mailOption = {
-      from: "aafan.nasimsaiyed@gmail.com",
+      from: "jadavaashish@gmail,com",
       to: user.email,
       subject: "Account verificaton otp",
       text:` Your OTP is ${otp}. Verify your account using this OTP.`,
@@ -91,7 +91,7 @@ export const sendResetOtp = async (req, res) => {
     await user.save();
 
     const mailOption = {
-      from: "aafan.nasimsaiyed@gmail.com",
+      from: "jadavaashish9@gmail.com",
       to: user.email,
       subject: "Password Reset OTP",
       text: `Your OTP for resetting your password is ${otp}. Use this OTP to proceed with resetting your password.`,

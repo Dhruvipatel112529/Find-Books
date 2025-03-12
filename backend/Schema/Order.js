@@ -44,6 +44,10 @@ const OrderSchema = new Schema({
         default: "Pending",
         enum: ["Pending", "Shipped", "Delivered", "Cancelled"], 
     },
+    Delivery_User_id: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
 }, { timestamps: true }); 
 
 module.exports = mongoose.model("Order", OrderSchema);

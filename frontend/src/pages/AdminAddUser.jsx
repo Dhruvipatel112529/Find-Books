@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "../pages-css/AdminAddUser.css"; // External CSS
+import { useNavigate } from "react-router-dom";
+
 
 export const AdminAddUser = () => {
   const [user, setUser] = useState({
@@ -10,6 +12,7 @@ export const AdminAddUser = () => {
     password: "",
     role: "",
   });
+  const Navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +44,7 @@ export const AdminAddUser = () => {
           role: "",
           password: "",
         });
+        Navigate("/Admin/ManageUsers");
       } else {
         alert(result.error || "Failed to add user.");
       }
@@ -110,6 +114,7 @@ export const AdminAddUser = () => {
           <select name="role" value={user.role} onChange={handleChange} required>
             <option value="User">User</option>
             <option value="Admin">Admin</option>
+            <option value="DeliveryPerson">DeliveryPerson</option>
           </select>
         </div>
 

@@ -96,7 +96,9 @@ router.post(
           .json({ error: "User with this email already exists" });
       }
 
-      const usertype = req.body.role === "Admin" ? true : false;
+      const admin = req.body.role === "Admin" ? true : false;
+      const DeliveryPerson = req.body.role === "DeliveryPerson" ? true : false;
+      const users = req.body.role === "User" ? true : false;
 
       // Hash the password
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -108,7 +110,11 @@ router.post(
         Email: req.body.email,
         Phone_no: req.body.mobile,
         Password: hashedPassword,
-        isAdmin: usertype
+        Role: [{
+          isUser: users,
+          isAdmin: admin,
+          isDeliveryPerson: DeliveryPerson,
+        }]
       });
 
       const savedUser = await newUser.save();

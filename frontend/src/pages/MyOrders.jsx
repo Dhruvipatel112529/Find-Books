@@ -64,7 +64,7 @@ export const MyOrders = () => {
           order._id === orderId
             ? {
                 ...order,
-                Order_Status: newStatus === "Shipped" ? "pending" : "Shipped",
+                Order_Status: newStatus === "Shipped" ? "Pending" : "Shipped",
               }
             : order
         )
@@ -130,7 +130,6 @@ export const MyOrders = () => {
                       <span>{orderItem.Order_Status}</span>
                     </div>
                   </div>
-
                   <div className="order-books">
                     <h3>Ordered Books2</h3>
                     <div className="book-list">
@@ -171,15 +170,12 @@ export const MyOrders = () => {
                     </div>
                   </div>
 
-                  {orderItem.Order_Status !== "cancel" && orderItem.Order_Status !== "Shipped" && (
-                    <button 
-                      className="cancel-order-btn"
-                      onClick={() => updateOrderStatus(orderItem._id, "cancel")}
-                    >
-                      <XCircle size={20} />
-                      Cancel Order
-                    </button>
-                  )}
+                  {orderItem.Order_Status === "Cancelled" || orderItem.Order_Status === "Shipped" || orderItem.Order_Status === "Delivered" ? "" :
+                  <button
+                      onClick={() => updateOrderStatus(orderItem._id, "Cancelled")}
+                  >
+                    Cancel Order
+                  </button>}
                 </div>
               ))
             ) : (

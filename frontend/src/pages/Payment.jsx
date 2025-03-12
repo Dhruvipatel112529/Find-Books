@@ -56,6 +56,7 @@ export const Payment = () => {
   const { total, address, cartDatas } = location.state || {};
 
   const initPayment = async (data) => {
+    console.log("datadaat",data)
     const options = {
       key: data.key, // Use the key from the backend response
       amount: data.amount,
@@ -75,6 +76,7 @@ export const Payment = () => {
               razorpay_paymentID: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               order: total + pcharge + deliveryCharge,
+              orderID: OrderData._id,
             }),
             credentials: "include",
           });

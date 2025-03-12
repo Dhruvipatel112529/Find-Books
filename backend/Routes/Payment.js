@@ -44,20 +44,20 @@ router.post("/orders", async (req, res) => {
 
 router.post("/verify", authenticateToken, async (req, res) => {
     try {
-        const { razorpay_orderID, razorpay_paymentID, razorpay_signature } = req.body;
+        const { razorpay_orderID, razorpay_paymentID, razorpay_signature, orderID } = req.body;
         const order = await Order.findOne({ User_id: req.userId }).sort({ createdAt: 1 });
         const sign = razorpay_orderID + "|" + razorpay_paymentID;
         const resultSign = crypto
             .createHmac("sha256", RAZORPAY_SECRET)
             .update(sign.toString())
             .digest("hex");
-        // console.log(razorpay_signature)
-        // console.log(resultSign)
+        console.log(razorpay_signature)
+        console.log(resultSign)
 
         if (razorpay_signature === resultSign) {
             const payment = new Payment({
-                payment_id: razorpay_paymentID,
-                order_id: order._id,
+                payment_id: order._id,
+                order_id: orderID,
                 payment_date: new Date(),
                 payment_method: "Razorpay",
                 payment_status: "Completed",
