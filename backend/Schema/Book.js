@@ -43,7 +43,7 @@ const BookSchema = new Schema({
         min: 1, 
     },
     ISBN: {
-        type: String, // Changed from Number to String
+        type: String, 
         required: true,
     },
     Condition: {

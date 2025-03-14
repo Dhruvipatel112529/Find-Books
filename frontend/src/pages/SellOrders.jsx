@@ -8,7 +8,10 @@ import Load from "../components/Load";
 export const SellOrders = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reseller, setReseller] = useState([]);
 
+
+  console.log(books, reseller)
   useEffect(() => {
     const getSellOrder = async () => {
       try {
@@ -17,7 +20,9 @@ export const SellOrders = () => {
         });
         const json = await response.json();
         const books = Array.isArray(json.books) ? json.books : [];
+        const resellerdata = Array.isArray(json.resellerdata) ? json.resellerdata : [];
         setBooks(books);
+        setReseller(resellerdata)
       } catch (error) {
         console.error("Error fetching SellOrder data:", error);
       } finally {
@@ -27,6 +32,40 @@ export const SellOrders = () => {
 
     getSellOrder();
   }, []);
+
+
+  const updatestatus = async (resellerid, bookid) => {
+    try {
+      const response = await fetch(`http://localhost:2606/api/${"Cancelled"}/SellOrders`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resellerid: resellerid, bookid: bookid }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update quantity");
+      }
+
+      setReseller((prevReseller) =>
+        prevReseller.map((res) =>
+          res._id === resellerid ? { ...res, Resell_Status: "Cancelled" } : res
+        )
+      );
+
+
+
+
+
+
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      alert("An error occurred while updating the quantity");
+    }
+  }
+
+
+
 
   const formatDate = (isoDate) => {
     if (!isoDate) return "";
@@ -64,43 +103,62 @@ export const SellOrders = () => {
             <p className="sell-orders-subtitle">Track and manage your book sales</p>
           </div>
           <div className="sell-orders-list">
-            {books.length > 0 ? (
-              books.map((book) => (
-                <div key={book._id} className="sell-order-card">
+            {reseller && reseller.length > 0 ? (
+              reseller.map((reseller) => (
+                <div key={reseller._id} className="sell-order-card">
                   <div className="order-header">
                     <div className="order-info">
-                      <div className="order-date">
-                        <Calendar size={20} />
-                        <span>{formatDate(book.Order_Date)}</span>
-                      </div>
-                      <div className="order-amount">
-                        <CreditCard size={20} />
-                        <span>₹{book.Price}</span>
-                      </div>
+                      {books
+                        .filter((data) => reseller.Book_id === data._id)
+                        .map((bookdata) => (
+                          <div key={bookdata._id}>
+                            <div className="order-date">
+                              <span>Created At</span>
+                              <Calendar size={20} />
+                              <span>{bookdata.createdAt ? formatDate(bookdata.createdAt) : "N/A"}</span>
+                              <span>Update Date</span>
+                              <Calendar size={20} />
+                              <span>{bookdata.updatedAt ? formatDate(bookdata.updatedAt) : "N/A"}</span>
+                            </div>
+                          </div>
+                        ))
+                      }
                     </div>
-                    <div className={`order-status ${getStatusColor(book.status)}`}>
-                      <Truck size={20} />
-                      <span>{book.status || "Pending"}</span>
-                    </div>
+                    <Truck size={20} />
+                    <span>{reseller.Resell_Status || "Pending"}</span>
                   </div>
 
                   <div className="order-books">
                     <h3>Book Details</h3>
-                    <div className="book-list">
-                      <div className="book-card">
-                        <div className="book-image">
-                          <img
-                            src={`http://localhost:2606/${book.BookImageURL}`}
-                            alt={book.BookName}
-                          />
+                    {books
+                      .filter((data) => reseller.Book_id === data._id)
+                      .map((bookdata) => (
+                        <div key={bookdata._id}>
+                          <div className="book-list">
+                            <div className="book-card">
+                              <div className="book-image">
+                                <img
+                                  src={`http://localhost:2606/${bookdata.BookImageURL}`}
+                                  alt={bookdata.BookName}
+                                />
+                              </div>
+                              <div className="book-details">
+                                <h4>{bookdata.BookName}</h4>
+                                <p className="book-price">₹{bookdata.Price}</p>
+                                <p className="book-quantity">Quantity: {bookdata.Quantity || 1}</p>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="book-details">
-                          <h4>{book.BookName}</h4>
-                          <p className="book-price">₹{book.Price}</p>
-                          <p className="book-quantity">Quantity: {book.Quantity || 1}</p>
-                        </div>
-                      </div>
-                    </div>
+                      ))
+                    }
+
+                    <p>Reseller Address: {reseller.address}</p>
+                    {reseller.Resell_Status === "Pending" ? (
+                      <button onClick={() => updatestatus(reseller._id, reseller.Book_id)}>
+                        Cancel Sell Book
+                      </button>
+                    ) : ""}
                   </div>
                 </div>
               ))
@@ -116,4 +174,5 @@ export const SellOrders = () => {
       </div>
     </>
   );
+
 }; 

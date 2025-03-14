@@ -28,7 +28,8 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  if (!user || user.isAdmin !== true) {
+  const roles = user.Role || [];
+  if (!user || roles !== "Admin") {
     return <Navigate to="/" />;
   }
 
@@ -179,7 +180,7 @@ const AdminDashboard = () => {
           order._id === orderId
             ? {
                 ...order,
-                Order_Status: newStatus === "Shipped" ? "Pending" : "Shipped",
+              Order_Status: newStatus === "Shipped" ? "Pending" : "Shipped",
               }
             : order
         )
@@ -526,8 +527,8 @@ const AdminDashboard = () => {
                 .reverse()
                     .filter((order) => {
                       return (
-                        order.Order_Status.toLowerCase() === "shipped" ||
-                        order.Order_Status.toLowerCase() === "pending"
+                        // order.Order_Status === "Shipped" ||
+                        order.Order_Status === "Pending"
                       );
                     })
                     .map((order) => {

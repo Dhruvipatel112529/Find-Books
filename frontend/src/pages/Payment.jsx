@@ -238,7 +238,7 @@ export const Payment = () => {
         body: JSON.stringify({
           order_id: OrderData._id,
           payment_method: paymentMethod,
-          payment_status: "pending",
+          payment_status: "Pending",
           total_payment: total + pcharge + deliveryCharge,
           transaction_Type: "credit",
         }),

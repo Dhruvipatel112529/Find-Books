@@ -2,13 +2,14 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const resellerSchema = new Schema({
-  reseller_id: {
-    type: Schema.Types.ObjectId,
-    primary_key : true
-  },
-  user_id: {
+  User_id: {
     type: Schema.Types.ObjectId,
     ref: 'User', 
+    required: true
+  },
+  Book_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Book', 
     required: true
   },
   address: {
@@ -26,7 +27,13 @@ const resellerSchema = new Schema({
   ifsc_code: {
     type: String,
     required: false 
-  }
+  },
+  Resell_Status: {
+    type: String,
+    trim: true,
+    default: "Pending",
+    enum: ["Pending", "Sell", "Collected", "Cancelled"]
+  },
 });
 
 module.exports = mongoose.model('Reseller', resellerSchema);

@@ -118,6 +118,23 @@ export const DeliveryDetail = () => {
         } catch (error) {
             alert("Failed to update order status. Please try again.");
         }
+        if (paymentdetail[0].payment_method === "COD") {
+            try {
+                const response = await fetch("http://localhost:2606/api/codpayment", {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paymentid: paymentdetail[0]._id }),
+                    credentials: 'include',
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to update quantity");
+                }
+            } catch (error) {
+                console.error("Error updating quantity:", error);
+                alert("An error occurred while updating the quantity");
+            }
+        }
     };
 
     return (
@@ -128,13 +145,15 @@ export const DeliveryDetail = () => {
                 <h2>Customer Details</h2>
                 <p><strong>Name:</strong> {userdetail.First_name ? `${userdetail.First_name} ${userdetail.Last_name}` : "N/A"}</p>
                 <p><strong>Phone:</strong> {userdetail.Phone_no || "N/A"}</p>
+                <p><strong>Email Id:</strong> {userdetail.Email || "N/A"}</p>
             </div>
 
             <div className="order-details">
                 <h2>Order Details</h2>
-                <p><strong>Order ID:</strong> {order._id || "N/A"}</p>
+                <p><strong>Order Id :</strong> {order._id || "N/A"}</p>
+                <p><strong>Address :</strong> {order.Address || "N/A"}</p>
                 <p><strong>Status:</strong> {order.Order_Status || "N/A"}</p>
-                <p><strong>Amount:</strong> ${order.Total_Amount || "0.00"}</p>
+                <p><strong>Amount:</strong> {order.Total_Amount || "0.00"}</p>
             </div>
 
             <div className="order-details">

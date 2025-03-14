@@ -6,7 +6,8 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const Authmid = require("../middleware/AuthMid");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer"); 
+const nodemailer = require("nodemailer");
+const Otp = require('../Schema/otp'); 
 
 
 const JsonSecretKey = "FindbooksDAD";
@@ -27,11 +28,11 @@ router.post("/forgot-password", async (req, res) => {
   await user.save();
 
   // Send email
-  await transporter.sendMail({
-    to: email,
-    subject: "Password Reset OTP",
-    text: `Your OTP is ${otp}. It is valid for 1 minutes.`
-  });
+  // await transporter.sendMail({
+  //   to: email,
+  //   subject: "Password Reset OTP",
+  //   text: `Your OTP is ${otp}. It is valid for 1 minutes.`
+  // });
 
   res.json({ message: "OTP sent to email" });
 });
@@ -63,6 +64,82 @@ router.post("/reset-password", async (req, res) => {
 
   res.json({ message: "Password reset successfully" });
 });
+
+
+
+router.post('/verifyotp', async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ message: 'Email and OTP are required' });
+  }
+
+  try {
+    // Find the OTP record (case-insensitive)
+    const otpRecord = await Otp.findOne({ email: email.toLowerCase() });
+
+    if (!otpRecord) {
+      return res.status(400).json({ message: 'OTP not found or expired' });
+    }
+
+    // Check if OTP is correct
+    if (otpRecord.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // OTP is correct, delete the record to prevent reuse
+    await Otp.deleteOne({ email });
+
+    res.json({ message: 'OTP verified successfully' });
+
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    res.status(500).json({ message: 'Server error. Please try again later.' });
+  }
+});
+
+
+router.post('/registerotp', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required.' });
+  }
+
+  const OTP = crypto.randomInt(100000, 999999).toString();
+
+  try {
+    // Check if OTP already exists for the email
+    const existingOtp = await Otp.findOne({ email });
+
+    if (existingOtp) {
+      existingOtp.otp = OTP;
+      await existingOtp.save();
+    } else {
+      const otp = new Otp({ email, otp: OTP });
+      await otp.save();
+    }
+
+    try {
+      await transporter.sendMail({
+        to: email,
+        subject: "Password Reset OTP",
+        text: `Your OTP is ${OTP}. It is valid for 1 minute.`
+      });
+    } catch (mailError) {
+      console.error('Error sending email:', mailError);
+      return res.status(500).json({ message: 'Failed to send OTP email.' });
+    }
+
+    res.json({ message: 'OTP sent. Please verify your email.', email });
+
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+    res.status(500).json({ message: 'Failed to send OTP. Please try again later.' });
+  }
+});
+
+
 
 // Registration route
 router.post(
@@ -96,9 +173,7 @@ router.post(
           .json({ error: "User with this email already exists" });
       }
 
-      const admin = req.body.role === "Admin" ? true : false;
-      const DeliveryPerson = req.body.role === "DeliveryPerson" ? true : false;
-      const users = req.body.role === "User" ? true : false;
+      
 
       // Hash the password
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -110,11 +185,7 @@ router.post(
         Email: req.body.email,
         Phone_no: req.body.mobile,
         Password: hashedPassword,
-        Role: [{
-          isUser: users,
-          isAdmin: admin,
-          isDeliveryPerson: DeliveryPerson,
-        }]
+        Role: req.body.role,
       });
 
       const savedUser = await newUser.save();
@@ -126,6 +197,7 @@ router.post(
         },
       };
       const authtoken = jwt.sign(data, JsonSecretKey);
+
 
       // Respond with success
       res.status(201).json({ user: savedUser, authtoken });

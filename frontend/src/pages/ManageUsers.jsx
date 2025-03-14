@@ -82,9 +82,6 @@ export const ManageUsers = () => {
     }
   };
 
-  const handleAddUser = () => {
-    
-  };
 
   return (
     <div className="users-page">
@@ -122,7 +119,7 @@ export const ManageUsers = () => {
                   </td>
                   <td className="centered">{user.Email}</td>
                   <td className="centered">
-                    {user.isAdmin ? "Admin" : user.Role[0].isDeliveryPerson ?"DeliveryPerson":"User" }
+                    {user.Role}
                   </td>
                   <td className="centered">
                     <div className="actions centered">

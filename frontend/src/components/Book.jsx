@@ -66,75 +66,79 @@ export const Book = () => {
     try {
       const res = await fetch("http://localhost:2606/api/Book");
       const data = await res.json();
+
+      console.log("API Response:", data); // Debugging
+
+      // Check if data is an array before filtering
+      if (!Array.isArray(data)) {
+        console.warn("Expected an array but got:", data);
+        setBookdata([]); // Set empty array to avoid errors
+        setLoading(false);
+        return;
+      }
+
       setBookdata(data);
 
       const tenDaysAgo = new Date();
       tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
-      
-      if (data) {
-        // Filter new arrivals (books published in the last 10 days)
-        setNewArrivals(
-          data.filter(
-            (book) =>
-              new Date(book.Publication_Date) > tenDaysAgo && !book.Isoldbook
-          )
-        );
 
-        // Filter comics
-        setComics(
-          data.filter(
-            (book) =>
-              book.Subcategory_id === "679309dbd59eec505ca71747" &&
-              !book.Isoldbook
-          )
-        );
+      setNewArrivals(
+        data.filter(
+          (book) =>
+            new Date(book.Publication_Date) > tenDaysAgo && !book.Isoldbook
+        )
+      );
 
-        // Filter school books
-        setSchoolBooks(
-          data.filter(
-            (book) =>
-              book.Subcategory_id === "67930a43d59eec505ca7174f" &&
-              !book.Isoldbook
-          )
-        );
+      setComics(
+        data.filter(
+          (book) =>
+            book.Subcategory_id === "679328219316fea7c66399b1" &&
+            !book.Isoldbook
+        )
+      );
 
-        // Filter exam books
-        setExamBooks(
-          data.filter(
-            (book) =>
-              book.Subcategory_id === "679309fdd59eec505ca7174b" &&
-              !book.Isoldbook
-          )
-        );
+      setSchoolBooks(
+        data.filter(
+          (book) =>
+            book.Subcategory_id === "679328219316fea7c66399b1" &&
+            !book.Isoldbook
+        )
+      );
 
-        // Filter literature
-        setLiterature(
-          data.filter(
-            (book) =>
-              book.Subcategory_id === "67930adfd59eec505ca71763" &&
-              !book.Isoldbook
-          )
-        );
+      setExamBooks(
+        data.filter(
+          (book) =>
+            book.Subcategory_id === "679328219316fea7c66399b1" &&
+            !book.Isoldbook
+        )
+      );
 
-        // Filter religious books
-        setReligiousBooks(
-          data.filter(
-            (book) =>
-              book.Subcategory_id === "67930b0fd59eec505ca71767" &&
-              !book.Isoldbook
-          )
-        );
+      setLiterature(
+        data.filter(
+          (book) =>
+            book.Subcategory_id === "679328219316fea7c66399b1" &&
+            !book.Isoldbook
+        )
+      );
 
-        // Filter resell books
-        setResellBooks(data.filter((book) => book.Isoldbook));
-      }
+      setReligiousBooks(
+        data.filter(
+          (book) =>
+            book.Subcategory_id === "679328219316fea7c66399b1" &&
+            !book.Isoldbook
+        )
+      );
+
+      setResellBooks(data.filter((book) => book.Isoldbook));
+
       setLoading(false);
     } catch (error) {
-      console.error(error);
+      console.error("Fetch Error:", error);
       setLoading(false);
       setError(error);
     }
   };
+
 
   useEffect(() => {
     fetchBook();

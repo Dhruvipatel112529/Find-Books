@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import "../components-css/BookForm.css";
 import { useNavigate } from "react-router-dom";
+import "../components-css/BookForm.css";
 
 export const BookForm = ({ UserRole }) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [errors, setErrors] = useState({}); // Store validation errors
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     BookName: "",
@@ -19,59 +19,11 @@ export const BookForm = ({ UserRole }) => {
     Price: "",
     ISBN: "",
     Condition: "",
-    isold: "",
     Category: "",
     SubCategory: ""
   });
 
-  // Handle form submission (validation + API call)
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let newErrors = {};
-  
-    // Validation checks
-    if (!formData.BookName.trim()) newErrors.BookName = "Book Name is required";
-    if (!formData.Author.trim()) newErrors.Author = "Author is required";
-    if (!formData.Publication_Date) newErrors.Publication_Date = "Publication Date is required";
-    if (!formData.Publisher.trim()) newErrors.Publisher = "Publisher is required";
-    if (!formData.Description.trim()) newErrors.Description = "Description is required";
-    if (!formData.Price || formData.Price <= 0) newErrors.Price = "Price must be greater than 0";
-    if (!formData.ISBN.trim()) newErrors.ISBN = "ISBN is required";
-    if (!formData.Condition) newErrors.Condition = "Condition is required";
-    if (!formData.Category) newErrors.Category = "Category is required";
-    if (!formData.SubCategory) newErrors.SubCategory = "Subcategory is required";
-  
-    setErrors(newErrors);
-  
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        const formDataToSend = new FormData();
-        for (const key in formData) {
-          formDataToSend.append(key, formData[key]);
-        }
-  
-        const response = await fetch(`http://localhost:2606/api/${UserRole}/Book`, {
-          method: "POST",
-          body: formDataToSend,
-          credentials: "include"
-        });
-  
-        const json = await response.json();
-  
-        if (json.book) {
-          alert("Book Added successfully!");
-          navigate("/ResellerPaymentForm");
-        } else {
-          alert(json.message || "Book not added");
-        }
-      } catch (error) {
-        console.error("Error occurred during submission:", error);
-        alert("An error occurred. Please check the console for details.");
-      }
-    }
-  };
-  
-
+  // Fetch Categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -82,14 +34,14 @@ export const BookForm = ({ UserRole }) => {
         console.error("Error fetching categories:", error);
       }
     };
-
     fetchCategories();
   }, []);
 
+  // Handle category change and fetch subcategories
   const handleCategoryChange = async (e) => {
     const categoryId = e.target.value;
-    setFormData((prev) => ({ ...prev, Category: categoryId }));
-    setErrors((prevErrors) => ({ ...prevErrors, Category: "" })); // Clear error when user selects category
+    setFormData((prev) => ({ ...prev, Category: categoryId, SubCategory: "" }));
+    setErrors((prevErrors) => ({ ...prevErrors, Category: "" })); // Clear errors
 
     try {
       const response = await fetch(`http://localhost:2606/api/${categoryId}/Subcategory`);
@@ -101,15 +53,47 @@ export const BookForm = ({ UserRole }) => {
     }
   };
 
+  // Handle text input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" })); // Clear errors on input change
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" })); // Clear errors
   };
 
+  // Handle file input changes
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setFormData((prev) => ({ ...prev, image: file }));
+
+    if (file) {
+      setFormData((prev) => ({ ...prev, image: file }));
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let newErrors = {};
+
+    // Validation
+    if (!formData.BookName.trim()) newErrors.BookName = "Book Name is required";
+    if (!formData.image) newErrors.image = "Book image is required";
+    if (!formData.Author.trim()) newErrors.Author = "Author is required";
+    if (!formData.Publication_Date) newErrors.Publication_Date = "Publication Date is required";
+    if (!formData.Publisher.trim()) newErrors.Publisher = "Publisher is required";
+    if (!formData.Description.trim()) newErrors.Description = "Description is required";
+    if (!formData.Price || formData.Price <= 0) newErrors.Price = "Price must be greater than 0";
+    if (!formData.ISBN.trim()) newErrors.ISBN = "ISBN is required";
+    if (formData.ISBN.length !== 13) newErrors.ISBN = "ISBN code must be 13 digits";
+    if (!formData.Condition) newErrors.Condition = "Condition is required";
+    if (!formData.Category) newErrors.Category = "Category is required";
+    if (!formData.SubCategory) newErrors.SubCategory = "Subcategory is required";
+
+    setErrors(newErrors);
+
+    // If there are no errors, navigate to the next page with form data
+    if (Object.keys(newErrors).length === 0) {
+      navigate("/ResellerPaymentForm", { state: { bookData: formData, UserRole } });
+    }
   };
 
   return (
@@ -120,7 +104,10 @@ export const BookForm = ({ UserRole }) => {
 
       <label>Book Image</label>
       <input type="file" name="image" onChange={handleImageChange} accept="image/*" />
-      {formData.image && <img src={URL.createObjectURL(formData.image)} alt="Preview" style={{ maxWidth: "200px", maxHeight: "200px" }} />}
+      {formData.image && (
+        <img src={URL.createObjectURL(formData.image)} alt="Preview" style={{ maxWidth: "200px", maxHeight: "200px" }} />
+      )}
+      {errors.image && <p className="error-message">{errors.image}</p>}
 
       <label>Author</label>
       <input type="text" name="Author" value={formData.Author} onChange={handleChange} />

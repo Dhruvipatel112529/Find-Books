@@ -26,10 +26,11 @@ import { AdminViewOrder } from './pages/AdminViewOrder';
 import { AddCat } from './pages/AddCat';
 
 import { EditProfile } from './pages/EditProfile';
-import { DeliveryDashboard } from './pages/DeliveryDashboard';
+import { DeliveryDashboard, DeliverypersonRoute } from './pages/DeliveryDashboard';
 import { DeliveryDetail } from './pages/DeliveryDetail';
 import Reports from './pages/Reports';
 import { AdminOrders } from './pages/AdminOrders';
+import { ResellDeliveryDetail } from './pages/ResellDeliveryDetail';
 
 export const App = () => {
   const router = createBrowserRouter([
@@ -59,8 +60,12 @@ export const App = () => {
         { path : "/Admin/AddCat" , element:  <AdminRoute><AddCat/></AdminRoute> },
         { path : "/Admin/Reports" , element:  <AdminRoute><Reports/></AdminRoute> },
         { path : "/Admin/Orders" , element:  <AdminRoute><AdminOrders/></AdminRoute> },
-         { path: "/deliverydashboard", element: <DeliveryDashboard /> },
-         { path: "/deliverydetail", element: <DeliveryDetail/>}
+    { path: "/deliverydashboard", element: <DeliverypersonRoute> <DeliveryDashboard /> </DeliverypersonRoute> },
+    {
+      path: "/deliverydashboard/deliverydetail", element: <DeliverypersonRoute> <DeliveryDetail /></DeliverypersonRoute>
+    }, {
+      path: "/deliverydashboard/reselldeliverydetail", element: <DeliverypersonRoute> <ResellDeliveryDetail/> </DeliverypersonRoute>
+    }
   ]);
 
   return (

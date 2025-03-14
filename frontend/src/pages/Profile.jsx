@@ -94,7 +94,7 @@ export const Profile = () => {
                                 />
                             </div>
                             <h2 className="profile-name">{user ? `${user.First_name} ${user.Last_name}` : "Guest"}</h2>
-                            <p className="profile-role">{user?.isAdmin ? "Administrator" : "User"}</p>
+                            <p className="profile-role">{user.Role}</p>
                         </div>
 
                         <div className="profile-info">

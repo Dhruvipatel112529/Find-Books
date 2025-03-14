@@ -21,13 +21,11 @@ const UserSchema = new Schema({
         unique: true,
         required: true,
         trim: true,
-        match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address'],
     },
     Phone_no: {
         type: String,
         required: true,
-        trim: true,
-        match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number'], 
+        trim: true, 
     },
     Password: {
         type: String,
@@ -35,18 +33,12 @@ const UserSchema = new Schema({
         minlength: 6, 
     },
 
-    Role: [{
-        isAdmin: {
-            type: Boolean,
-            required: true,
-            default: false,
-        },
-        isDeliveryPerson: {
-            type: Boolean,
-            required: true,
-            default: false,
-        },
-    }],
+    Role: {
+        type: String,
+        required: true,
+        enum: ["User", "Admin", "Deliveryperson"],
+        default: "User",
+    },
     
     otp: {
         type: String

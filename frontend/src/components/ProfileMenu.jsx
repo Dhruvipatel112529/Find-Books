@@ -9,7 +9,7 @@ import { CgProfile } from "react-icons/cg";
 import { FaUserCircle } from 'react-icons/fa';
 
 export function ProfileMenu() {
-    const [admin, setAdmin] = useState(null);
+    const [role, setRole] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
@@ -20,8 +20,10 @@ export function ProfileMenu() {
                 const response = await fetch("http://localhost:2606/api/User", {
                     credentials: "include",
                 });
+
                 const json = await response.json();
-                setAdmin(json.user.isAdmin);
+                const roles = json.user.Role || [];
+                setRole(roles);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -32,7 +34,7 @@ export function ProfileMenu() {
     }, []);
 
     const handleAdminClick = (e) => {
-        if (admin) {
+        if (role === "Admin") {
             e.preventDefault();
             navigate("/Admin");
         }
@@ -52,42 +54,56 @@ export function ProfileMenu() {
                 <FaUserCircle /> My Account
             </h3>
             <ul>
-                {admin && (
+                {role === "Deliveryperson" ? (
                     <li className="menu-item">
-                        <Link 
-                            to="/Admin" 
-                            onClick={handleAdminClick}
-                            className={isActive("/Admin") ? "active" : ""}
+                        <Link
+                            to="/deliverydashboard"
+                            className={isActive("/deliverydashboard") ? "active" : ""}
                         >
-                            <MdDashboard /> Dashboard
+                            <MdDashboard /> Delivery Dashboard
                         </Link>
                     </li>
+                ) : (
+                    <>
+                        {role === "Admin" && (
+                            <li className="menu-item">
+                                <Link
+                                    to="/Admin"
+                                    onClick={handleAdminClick}
+                                    className={isActive("/Admin") ? "active" : ""}
+                                >
+                                    <MdDashboard /> Dashboard
+                                </Link>
+                            </li>
+                        )}
+                        <li className="menu-item">
+                            <Link
+                                to="/Profile"
+                                className={isActive("/Profile") ? "active" : ""}
+                            >
+                                <CgProfile /> My Profile
+                            </Link>
+                        </li>
+                        <li className="menu-item">
+                            <Link
+                                to="/Orders"
+                                className={isActive("/Orders") ? "active" : ""}
+                            >
+                                <ImBooks /> Orders
+                            </Link>
+                        </li>
+                        <li className="menu-item">
+                            <Link
+                                to="/Sellorders"
+                                className={isActive("/Sellorders") ? "active" : ""}
+                            >
+                                <MdOutlineSell /> Sell Orders
+                            </Link>
+                        </li>
+                    </>
                 )}
-                <li className="menu-item">
-                    <Link 
-                        to="/Profile"
-                        className={isActive("/Profile") ? "active" : ""}
-                    >
-                        <CgProfile /> My Profile
-                    </Link>
-                </li>
-                <li className="menu-item">
-                    <Link 
-                        to="/Orders"
-                        className={isActive("/Orders") ? "active" : ""}
-                    >
-                        <ImBooks /> Orders
-                    </Link>
-                </li>
-                <li className="menu-item">
-                    <Link 
-                        to="/Sellorders"
-                        className={isActive("/Sellorders") ? "active" : ""}
-                    >
-                        <MdOutlineSell /> Sell Orders
-                    </Link>
-                </li>
             </ul>
         </div>
     );
-}
+};
+

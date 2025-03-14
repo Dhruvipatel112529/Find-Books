@@ -9,6 +9,7 @@ router.post("/ResellerPaymentForm", authenticateToken, [
     body("upi_id"),
     body("bank_acc_no"),
     body("ifsc_code"),
+    body("Pincode"),
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -16,14 +17,10 @@ router.post("/ResellerPaymentForm", authenticateToken, [
     }
 
     try {
-        console.log("User ID:", req.userId);
-        if (!req.userId) {
-            return res.status(401).json({ error: "User authentication failed" });
-        }
-
         const resellerPayment = new ResellerPaymentModel({
-            user_id: req.userId,
-            address: req.body.address,
+            User_id: req.userId,
+            Book_id: req.body.bookid,
+            address: `${req.body.address} - ${req.body.Pincode}` ,
             upi_id: req.body.upi_id,
             bank_acc_no: req.body.bank_acc_no,
             ifsc_code: req.body.ifsc_code,

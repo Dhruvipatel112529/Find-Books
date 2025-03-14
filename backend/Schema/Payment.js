@@ -22,7 +22,8 @@ const paymentSchema = new Schema({
   },
   payment_status: {
     type: String,
-    required: true
+    required: true,
+    enum: ["Pending", "Completed","Process"]
   },
   total_payment: {
     type: Number,

@@ -162,9 +162,9 @@ export const MyOrders = () => {
                     </div>
                   </div>
 
-                  {orderItem.Order_Status === "Cancelled" || orderItem.Order_Status === "Shipped" || orderItem.Order_Status === "Delivered" ? "" :
+                    {orderItem.Order_Status === "Cancelled" || orderItem.Order_Status === "Shipped" || orderItem.Order_Status === "Delivered" ? "" :
                   <button
-                      onClick={() => updateOrderStatus(orderItem._id, "Cancelled")}
+                        onClick={() => updateOrderStatus(orderItem._id, "Cancelled")}
                   >
                     Cancel Order
                   </button>}

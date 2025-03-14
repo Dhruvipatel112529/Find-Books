@@ -6,6 +6,8 @@ const crypto = require("crypto");
 const Payment = require("../Schema/Payment");
 const Order = require("../Schema/Order");
 const Cart = require("../Schema/Cart");
+const Book = require("../Schema/Book");
+const Reseller = require("../Schema/Reseller");
 const authenticateToken = require("../middleware/AuthMid");
 
 // Valid order statuses
@@ -57,7 +59,7 @@ router.post("/verify", authenticateToken, async (req, res) => {
 
         if (razorpay_signature === resultSign) {
             const payment = new Payment({
-                payment_id: order._id,
+                payment_id: razorpay_paymentID,
                 order_id: orderID,
                 payment_date: new Date(),
                 payment_method: "Razorpay",
@@ -124,6 +126,22 @@ router.put('/addorder', authenticateToken, async (req, res) => {
         order.books = updatedBooks;
         console.log('order after', order);
         await order.save();
+
+        const bookIds = order.books.map(item => item.book_id); // Extract book IDs
+        console.log("boookboook", bookIds)
+        // Fetch resellers who have matching book IDs
+        
+        let resellers = await Reseller.find({
+            Book_id: { $in: bookIds }  // Ensure field name matches schema
+        });
+        console.log("reeeseeeler", resellers)
+
+        // If matching resellers are found, update their status
+        for (let reseller of resellers) {
+            reseller.Resell_Status = "Sell";  // Correct assignment
+            await reseller.save();  // Save each document individually
+        }
+        
 
         res.status(200).json({ message: "Order updated successfully", order });
     } catch (error) {
@@ -199,5 +217,23 @@ router.post(
         }
     }
 );
+
+router.put('/codpayment', authenticateToken, async (req, res) => {
+    try {
+        const { paymentid } = req.body;
+
+        const payment = await Payment.findById(paymentid);
+
+        payment.payment_status = "Completed";
+        await payment.save();
+        res.status(200).json({
+            message: "Order status updated successfully"
+        });
+    }
+    catch (error) {
+        console.error("Error saving payment:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 module.exports = router;

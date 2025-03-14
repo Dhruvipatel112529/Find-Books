@@ -147,13 +147,14 @@ router.put(
 
       let updateData = { Order_Status: status };
 
-      // If the user is a delivery person, assign Delivery_User_id
-      if (userdetail && userdetail.Role[0].isDeliveryPerson === true) {
         updateData.Delivery_User_id = req.userId;
-      }
 
       // Find and update the order
-      const updatedOrder = await Order.findByIdAndUpdate(orderId, updateData, { new: true });
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { $set: updateData }, // Explicitly set fields
+        { new: true }
+      );
 
       if (!updatedOrder) {
         return res.status(404).json({ message: "Order not found" });

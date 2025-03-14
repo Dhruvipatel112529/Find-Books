@@ -14,7 +14,30 @@ export const Navbar = () => {
   const [menuActive, setMenuActive] = useState(false);
   const [showCategory, setShowCategory] = useState(false); // State to toggle Category visibility
   const [scrolling, setScrolling] = useState(false);
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState();
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const GetUser = async () => {
+      try {
+        const response = await fetch("http://localhost:2606/api/User", {
+          credentials: "include",
+        });
+
+        const json = await response.json();
+        const roles = json.user.Role || [];
+        setRole(roles);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    GetUser();
+  }, []);
+
 
   const closeMenu = () => {
     setMenuActive(false); // Close menu when an item is clicked
@@ -85,12 +108,16 @@ export const Navbar = () => {
             <div className="appname"><NavLink to="/">FINDB<GiMagnifyingGlass className='glass' />OKS</NavLink></div>
           </div>
           <div className={`menulist ${menuActive ? 'active' : ''}`}>
+            {role !== "Deliveryperson" &&
+              <>
             <NavLink to="/"><FaHome /> Home</NavLink>
             <NavLink to="#" onClick={checkToken}>
               <MdLibraryBooks /> SellBooks
             </NavLink>
             <NavLink to="#" onClick={openCat}  ><GiBookmark /> Category</NavLink>
-            <NavLink to="#" onClick={checkTokencart}><FaShoppingCart /> Cart</NavLink>
+              <NavLink to="#" onClick={checkTokencart}><FaShoppingCart /> Cart</NavLink>
+            </>
+            }
             <NavLink to="/Profile"><FaUserCircle /> Profile</NavLink>
           </div>
           <div className='login'>

@@ -114,7 +114,7 @@ export const AdminAddUser = () => {
           <select name="role" value={user.role} onChange={handleChange} required>
             <option value="User">User</option>
             <option value="Admin">Admin</option>
-            <option value="DeliveryPerson">DeliveryPerson</option>
+            <option value="Deliveryperson">Deliveryperson</option>
           </select>
         </div>
 
